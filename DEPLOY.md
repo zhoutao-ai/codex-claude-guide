@@ -6,8 +6,26 @@
 
 - GitHub 账号
 - Vercel 账号（可用 GitHub 账号直接登录）
+- 已安装 GitHub CLI（`gh`）和 Git（如果 Windows 上没有，先安装：https://cli.github.com/ 和 https://git-scm.com/）
 
-## 部署步骤
+## 最快部署方式：运行一键脚本
+
+我已经帮你配置好 Git 远程仓库地址（`https://github.com/zhoutao-ai/codex-claude-guide.git`）。
+
+你只需：
+
+1. 打开文件资源管理器，进入项目目录：
+   ```
+   C:/Users/GIGABYTE/WorkBuddy/2026-06-29-13-21-15/codex-claude-site
+   ```
+2. 双击运行 **`deploy-to-github.cmd`**
+3. 如果提示未登录 GitHub，按提示完成登录（浏览器授权即可）
+4. 脚本会自动创建 GitHub 仓库并推送代码
+5. 脚本最后会显示 Vercel 导入链接，复制到浏览器打开即可
+
+## 手动部署步骤
+
+如果你不想运行脚本，也可以按下面步骤手动操作：
 
 ### 1. 在 GitHub 创建仓库
 
@@ -24,7 +42,7 @@
 ```bash
 cd C:/Users/GIGABYTE/WorkBuddy/2026-06-29-13-21-15/codex-claude-site
 
-git remote add origin https://github.com/你的用户名/codex-claude-guide.git
+git remote add origin https://github.com/zhoutao-ai/codex-claude-guide.git
 git branch -M main
 git push -u origin main
 ```
@@ -32,7 +50,7 @@ git push -u origin main
 如果使用 SSH，则把远程地址改为：
 
 ```bash
-git remote add origin git@github.com:你的用户名/codex-claude-guide.git
+git remote add origin git@github.com:zhoutao-ai/codex-claude-guide.git
 ```
 
 ### 3. 在 Vercel 导入仓库
@@ -51,7 +69,13 @@ git remote add origin git@github.com:你的用户名/codex-claude-guide.git
 Vercel 会自动安装依赖、执行构建、部署上线。完成后会得到类似下面的域名：
 
 ```
-https://codex-claude-guide-你的用户名.vercel.app
+https://codex-claude-guide-zhoutao-ai.vercel.app
+```
+
+或者直接打开 Vercel 导入链接：
+
+```
+https://vercel.com/new/import?repository-url=https://github.com/zhoutao-ai/codex-claude-guide
 ```
 
 ## 后续更新
