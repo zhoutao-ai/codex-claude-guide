@@ -1,0 +1,150 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "OpenAI 账号注册完整指南"
+description: "中国大陆用户注册 OpenAI 账号的邮箱、IP、环境要求与注意事项"
+product: "Codex"
+category: "认证"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+使用 Codex 的所有形态（CLI、桌面应用、VS Code 扩展、网页版）都需要 OpenAI 账号。对于中国大陆用户，注册 OpenAI 账号是第一个门槛。本指南详细介绍注册流程与注意事项。
+
+## 注册前提条件
+
+### 1. 网络环境
+
+- 使用**美国或英国**的 VPN/代理节点
+- 避免使用免费节点（IP 被大量复用，容易触发风控）
+- 推荐使用住宅 IP 代理（如住宅 IP 的 VPS 或代理服务）
+- 确保 IP 稳定，注册过程中不要切换节点
+
+### 2. 邮箱
+
+| 邮箱类型 | 推荐度 | 说明 |
+|---|---|---|
+| Gmail | ★★★★★ | 最推荐，权重最高 |
+| Outlook / Hotmail | ★★★★ | 微软邮箱，权重较高 |
+| Protonmail | ★★★★ | 瑞士邮箱，隐私保护好 |
+| iCloud Mail | ★★★ | 可用，但不如 Gmail |
+| QQ / 163 / 126 | ✗ | 国内邮箱，容易被拒 |
+| 临时邮箱 / 10分钟邮箱 | ✗ | 100% 被拒 |
+
+### 3. 浏览器
+
+- 推荐使用 **Chrome** 或 **Edge** 的**无痕模式**
+- 避免使用安装了大量隐私插件的浏览器（可能被识别为机器人）
+- 如果之前注册失败过，清除所有 Cookie 或使用全新的浏览器配置
+
+## 注册步骤
+
+### 第一步：准备环境
+
+1. 开启 VPN/代理，确认 IP 为美国/英国
+2. 打开浏览器无痕模式
+3. 访问 [platform.openai.com/signup](https://platform.openai.com/signup)
+
+### 第二步：填写邮箱
+
+1. 输入准备好的 Gmail/Outlook 邮箱
+2. 设置密码（8 位以上，包含字母和数字）
+3. 点击继续
+
+### 第三步：邮箱验证
+
+1. 登录邮箱，查找来自 OpenAI 的验证邮件
+2. 点击邮件中的验证链接
+3. 如果 5 分钟内未收到邮件，检查垃圾邮件文件夹
+
+### 第四步：填写姓名
+
+- First Name 和 Last Name 可以使用拼音或英文名
+- 不要使用明显虚假的名字
+
+### 第五步：手机号验证
+
+这是最关键的一步。详见[手机号验证解决方案](/docs/codex/auth/phone-verification)。
+
+核心要点：
+- +86 号码**不可用**
+- 需要海外实体 SIM 卡或长期独占云号码
+- IP 国家与号码国家保持一致
+- 禁用 VoIP 号码
+
+### 第六步：完成注册
+
+验证通过后，你将进入 OpenAI 平台控制台。此时账号已创建成功。
+
+## 注册后配置
+
+### 设置 API Key
+
+1. 进入 [API Keys 页面](https://platform.openai.com/api-keys)
+2. 点击 "Create new secret key"
+3. 为 Key 命名（如 "codex-cli"）
+4. 复制生成的 Key（**只显示一次**，务必保存）
+
+### 配置 Codex CLI
+
+```bash
+# 设置环境变量
+export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxx"
+
+# 或写入 shell 配置文件
+echo 'export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxx"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 验证配置
+
+```bash
+codex --version
+codex "hello"
+```
+
+## 注意事项
+
+<div class="alert alert-danger">
+<strong>封号高风险行为：</strong>
+<ul>
+<li>频繁切换 IP 地区（如一会儿美国、一会儿日本）</li>
+<li>多人共用同一账号</li>
+<li>使用已被封号的 IP 地址</li>
+<li>使用临时邮箱或虚假信息</li>
+<li>短时间大量 API 请求（触发速率限制）</li>
+</ul>
+</div>
+
+<div class="alert alert-tip">
+<strong>保号建议：</strong>
+<ul>
+<li>固定使用一个 IP 节点（或同一国家/地区的节点）</li>
+<li>不要在公共论坛分享你的 API Key</li>
+<li>定期登录 platform.openai.com 保持账号活跃</li>
+<li>设置 API 使用限额，避免意外超额</li>
+</ul>
+</div>
+
+## 常见问题
+
+### Q: 注册时提示 "not available in your country"？
+
+说明你的 IP 被 OpenAI 识别为不支持地区。更换为美国/英国的 VPN 节点，使用无痕模式重试。
+
+### Q: 邮箱验证链接打不开？
+
+可能是网络问题。确保 VPN 已开启，尝试直接复制链接到浏览器地址栏打开。
+
+### Q: 需要付费才能使用 Codex 吗？
+
+- **ChatGPT 内置 Codex**：需要 ChatGPT Plus ($20/月) 或 Pro 订阅
+- **Codex CLI**：可使用 API Key 按量付费，也可使用 ChatGPT Plus 账号登录
+- **API 调用**：按 token 使用量计费，新账号通常有少量免费额度
+
+## 相关阅读
+
+- [API Key 创建与验证](/docs/codex/auth/api-key)
+- [手机号验证解决方案](/docs/codex/auth/phone-verification)
+- [auth.json 配置](/docs/codex/auth/auth-json)
+- [config.toml 配置](/docs/codex/auth/config-toml)

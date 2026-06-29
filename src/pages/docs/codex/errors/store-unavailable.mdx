@@ -1,0 +1,71 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Microsoft Store 不可用 — 桌面应用地区限制"
+description: "在 Microsoft Store 搜索 Codex 桌面应用时提示所在地区不可用的解决方案"
+product: "Codex"
+category: "安装"
+severity: "中"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 Windows 上尝试通过 Microsoft Store 安装 Codex 桌面应用时：
+
+1. 搜索不到 "Codex" 应用
+2. 或搜索到了，但点击安装时提示"所在地区不可用"
+3. 或提示"此应用在你所在的国家/地区不可用"
+
+## 错误原因
+
+OpenAI Codex 桌面应用目前仅在部分地区的 Microsoft Store 上架。如果你的 Microsoft Store 账户地区设置为中国大陆或其他未支持地区，将无法看到或安装该应用。
+
+## 解决方案
+
+### 方案一：切换 Microsoft Store 地区（推荐）
+
+1. 打开 **设置** → **时间和语言** → **语言和区域**
+2. 在"国家或地区"下拉菜单中，选择 **美国**
+3. 打开 Microsoft Store
+4. 搜索 "OpenAI Codex" 或 "Codex"
+5. 点击安装
+
+<div class="alert alert-warning">
+<strong>注意：</strong>切换地区后，部分已安装的应用可能需要重新登录。Microsoft 允许每隔 3 个月切换一次地区。
+</div>
+
+### 方案二：使用 Web 版替代
+
+桌面应用与 [chatgpt.com/codex](https://chatgpt.com/codex) 网页版功能基本一致。如果只是需要使用 Codex 的编程功能，可以直接使用网页版。
+
+### 方案三：使用 VS Code 扩展替代
+
+如果你主要是为了在编辑器中使用 Codex，VS Code 扩展是更好的选择：
+
+1. 打开 VS Code
+2. 进入扩展市场（`Ctrl+Shift+X`）
+3. 搜索 "OpenAI Codex"
+4. 点击安装
+
+### 方案四：使用 Codex CLI 替代
+
+对于开发者，Codex CLI 功能更强大：
+
+```bash
+npm install -g @openai/codex
+```
+
+安装后可以在任何终端中使用。
+
+## 四种 Codex 形态对比
+
+| 形态 | 需要商店？ | 适合人群 | 功能完整度 |
+|---|---|---|---|
+| 桌面应用 | 是（需切换地区） | 普通用户 | 完整 |
+| VS Code 扩展 | 否 | VS Code 用户 | 完整 |
+| CLI | 否 | 开发者 | 完整+ |
+| 网页版 | 否 | 所有用户 | 完整 |
+
+<div class="alert alert-tip">
+<strong>建议：</strong>如果你在中国大陆，推荐直接使用 <strong>Codex CLI</strong> 或 <strong>VS Code 扩展</strong>，无需折腾 Microsoft Store 地区设置。
+</div>

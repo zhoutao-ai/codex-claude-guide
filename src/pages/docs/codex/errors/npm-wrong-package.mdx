@@ -1,0 +1,91 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "npm install -g codex 装错包了"
+description: "安装 Codex CLI 时常见的包名错误——正确包名是 @openai/codex 而非 codex"
+product: "Codex"
+category: "安装"
+severity: "低"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在通过 npm 安装 OpenAI Codex CLI 时，很多开发者直接执行：
+
+```bash
+npm install -g codex
+```
+
+这条命令不会报错——因为 npm 上确实存在一个名为 `codex` 的包。但它**不是** OpenAI 的 Codex CLI，而是一个完全不同的、早已停止维护的静态站点生成器。安装后你会发现 `codex --version` 输出的不是 OpenAI 的版本号，或者命令行为与官方文档描述完全不符。
+
+## 错误原因
+
+npm 包名 `codex` 被一个无关项目占用。OpenAI 官方的 Codex CLI 包名是 **`@openai/codex`**（带 scope 前缀）。
+
+此外，如果你搜索到的一些旧教程或博客文章中写了 `npm install -g codex`，那篇文章很可能已过时或作者本身也没验证过。
+
+## 解决方案
+
+### 第一步：卸载错误安装的包
+
+```bash
+npm uninstall -g codex
+```
+
+### 第二步：安装正确的包
+
+```bash
+npm install -g @openai/codex
+```
+
+### 第三步：验证安装
+
+```bash
+codex --version
+```
+
+正确安装后，应输出类似 `0.x.x` 的版本号。
+
+## 替代安装方式
+
+除了 npm，你还可以使用官方安装脚本：
+
+**macOS / Linux：**
+
+```bash
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+```
+
+**Windows PowerShell：**
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+## 如何区分正确与错误的包
+
+| 特征 | `codex`（错误） | `@openai/codex`（正确） |
+|---|---|---|
+| 发布者 | 个人开发者 | OpenAI |
+| 用途 | 静态站点生成器 | AI 编程 Agent |
+| 最近更新 | 多年前 | 持续更新 |
+| 下载量 | 极少 | 数十万 |
+
+## 常见追问
+
+### Q: 已经装了错误的包，会影响正确的包吗？
+
+不会。npm 的 scope 机制（`@openai/` 前缀）保证了两个包互不干扰。但建议先卸载错误包，避免终端中 `codex` 命令指向错误的程序。
+
+### Q: 安装时提示 `EBADENGINE` 怎么办？
+
+确保你的 Node.js 版本 ≥ 22。可以使用 nvm 管理多版本：
+
+```bash
+nvm install 22
+nvm use 22
+```
+
+<div class="alert alert-tip">
+<strong>建议：</strong>始终以 <a href="https://github.com/openai/codex" target="_blank">OpenAI 官方 GitHub 仓库</a> 的安装说明为准，不要轻信第三方教程中的命令。
+</div>

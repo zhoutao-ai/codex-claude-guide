@@ -1,0 +1,104 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Number already used too many times — 号码绑定达上限"
+description: "Claude 提示手机号已被使用太多次，原因是号码已被绑定到多个账号，需更换全新号码"
+product: "Claude"
+category: "验证"
+severity: "高"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 Claude.ai 注册时输入手机号后，收到提示：
+
+```
+This number has already been used too many times.
+```
+
+或：
+
+```
+This phone number is already associated with the maximum number of accounts.
+```
+
+## 错误原因
+
+Anthropic 限制每个手机号可绑定的 Claude 账号数量（通常为 2-3 个）。当号码达到绑定上限后，将无法用于新账号的验证。
+
+常见触发场景：
+- 你之前已用该号码注册过多个 Claude 账号
+- 使用的是接码平台的共享号码（已被他人使用过）
+- 二手 SIM 卡的前主人已用该号码注册过 Claude
+
+## 与其他错误的区别
+
+| 错误 | 含义 | 解决方向 |
+|---|---|---|
+| Number already used too many times | 号码绑定账号达上限 | 换全新号码 |
+| Unsupported phone line type | 号码类型不被支持 | 换实体卡 |
+| phone_number_temp_blocked | 尝试过多被临时锁 | 等待 24 小时 |
+
+## 解决方案
+
+### 第一步：确认是否自己用过
+
+如果你有多个 Claude 账号，检查是否已在其他账号上绑定过该号码。如果之前的账号已不需要，可以：
+
+1. 登录旧账号
+2. 进入 Settings → Account
+3. 移除绑定的手机号
+4. 等待 24 小时
+5. 在新账号上使用该号码
+
+### 第二步：更换为全新号码
+
+如果确认不是自己使用过的，说明号码已被他人占用。必须更换一个**从未用于 Claude 验证**的新号码。
+
+#### 推荐渠道
+
+| 渠道 | 类型 | 稳定性 | 说明 |
+|---|---|---|---|
+| 海外实体 SIM 卡 | 实体 | ★★★★★ | 全新卡，号码从未使用 |
+| DuoPlus 独占号码 | 云号码 | ★★★★ | 需确认是全新号 |
+| 朋友的海外号码 | 实体 | ★★★★ | 确认朋友未注册过 Claude |
+
+<div class="alert alert-danger">
+<strong>不要使用：</strong>接码平台的共享号码。这些号码被成百上千人使用过，几乎必定触发"already used"错误。
+</div>
+
+### 第三步：确保环境干净
+
+更换号码后，同时确保：
+
+1. **IP 干净**：使用未被标记的 VPN 节点
+2. **浏览器干净**：使用全新的无痕窗口
+3. **IP 与号码一致**：VPN 的 IP 国家与号码归属国相同
+4. **等待冷却**：如果之前尝试失败，等待 1-2 小时再试
+
+## 预防措施
+
+- **一号一账号**：每个 Claude 账号使用独立的、全新的手机号
+- **保留号码所有权**：确保你能长期持有该号码，以备后续重新验证
+- **不要共享号码**：不要将同一号码分享给多人注册
+- **不要使用接码平台**：共享号码被反复使用，失败率极高
+
+## 常见问题
+
+### Q: 如何知道一个号码是否被用过？
+
+没有办法预先查询。但如果你使用的是全新购买的实体 SIM 卡，且从未在 Claude 上验证过，基本可以确定是全新的。
+
+### Q: 号码绑定的旧账号已删除，号码还能用吗？
+
+通常可以。删除账号后，号码绑定关系会释放。但可能需要等待一段时间（24-72 小时）才可以在新账号上使用。
+
+### Q: Claude 的号码绑定上限是多少？
+
+官方未公开具体数字。根据社区反馈，通常为 2-3 个账号。
+
+## 相关阅读
+
+- [Claude 手机号验证完整指南](/docs/claude/guides/phone-verification)
+- [Unsupported phone line type 详解](/docs/claude/errors/unsupported-phone)
+- [Claude 注册完整流程](/docs/claude/guides/registration)

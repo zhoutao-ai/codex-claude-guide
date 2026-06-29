@@ -1,0 +1,110 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "PropertyNotFoundException — Windows 安装脚本报错"
+description: "在 Windows 上执行 Codex 官方安装脚本时出现 PropertyNotFoundException 的原因与解决方案"
+product: "Codex"
+category: "安装"
+severity: "中"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 Windows 上执行 Codex 官方安装脚本时：
+
+```powershell
+irm https://chatgpt.com/codex/install.ps1 | iex
+```
+
+部分用户遇到以下报错：
+
+```
+PropertyNotFoundException
+```
+
+或类似：
+
+```
+The property 'XXX' cannot be found on this object.
+```
+
+安装中断，无法完成。
+
+## 错误原因
+
+这个错误的根本原因是 **PowerShell 执行策略限制**。Windows 默认的 PowerShell 执行策略为 `Restricted`，会阻止从远程下载的脚本执行。当安装脚本试图调用某些被策略拦截的操作时，就会抛出 `PropertyNotFoundException`。
+
+此外，旧版 Windows PowerShell（5.1 及以下）与新版 PowerShell Core（7+）在语法兼容性上也存在差异，可能导致脚本解析失败。
+
+## 解决方案
+
+### 方案一：显式设置执行策略（推荐）
+
+在执行安装命令前，先修改执行策略：
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+`-ExecutionPolicy ByPass` 参数会临时绕过执行策略限制，仅对当前命令有效，不会永久修改系统设置。
+
+### 方案二：使用 npm 安装
+
+如果官方脚本始终无法执行，可以直接用 npm 安装：
+
+```powershell
+npm install -g @openai/codex
+```
+
+### 方案三：升级 PowerShell
+
+如果你使用的是旧版 Windows PowerShell 5.1，建议升级到 PowerShell 7+：
+
+```powershell
+winget install Microsoft.PowerShell
+```
+
+安装完成后，使用 `pwsh` 命令打开新版 PowerShell，再执行安装脚本。
+
+### 方案四：手动下载安装
+
+1. 访问 [OpenAI Codex GitHub Releases](https://github.com/openai/codex/releases)
+2. 下载对应 Windows 的安装包
+3. 手动执行安装
+
+## 验证安装
+
+安装完成后，打开**新的**终端窗口（不是之前报错的那个），执行：
+
+```powershell
+codex --version
+```
+
+## 常见追问
+
+### Q: 修改执行策略会有安全风险吗？
+
+使用 `-ExecutionPolicy ByPass` 参数是临时的，只对当前命令有效，不会修改系统全局设置。这是微软官方推荐的临时执行远程脚本的方式，安全风险极低。
+
+### Q: 安装后 codex 命令仍然不可用？
+
+这是因为当前终端的 PATH 环境变量没有刷新。解决方法：
+
+1. **完全关闭**当前终端窗口
+2. 重新打开一个新的终端窗口
+3. 再次执行 `codex --version`
+
+如果仍然不可用，手动将 npm 全局 bin 目录加入 PATH：
+
+```powershell
+# 查看 npm 全局 bin 目录
+npm config get prefix
+
+# 通常是 C:\Users\<用户名>\AppData\Roaming\npm
+```
+
+将该路径添加到系统环境变量 PATH 中。
+
+<div class="alert alert-info">
+<strong>提示：</strong>Windows 上使用 Codex CLI 推荐 Node.js 22+ 和 PowerShell 7+，可大幅减少兼容性问题。
+</div>

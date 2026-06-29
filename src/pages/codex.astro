@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const forms = [
+  { name: 'Codex 桌面应用', platform: 'Windows / macOS', audience: '普通用户', requirement: 'OpenAI 账号', note: '部分地区商店不可用' },
+  { name: 'VS Code 扩展', platform: 'VS Code', audience: 'VS Code 用户', requirement: 'OpenAI 账号', note: '与桌面应用一致' },
+  { name: 'Codex CLI', platform: 'npm / 官方脚本', audience: '开发者', requirement: 'OpenAI 账号 / API Key', note: '可配合 API 中转' },
+  { name: 'ChatGPT 内置', platform: 'chatgpt.com/codex', audience: 'Plus / Pro 用户', requirement: 'OpenAI 账号', note: '需网络环境' },
+];
+
+const installGuides = [
+  {
+    title: 'Windows 安装 Codex CLI',
+    platform: 'Windows',
+    status: '有效',
+    lastVerified: '2026-06-29',
+    steps: [
+      '安装 Node.js 22 或更高版本（推荐使用 nvm-windows 管理）。',
+      '打开 PowerShell（非管理员），执行官方安装脚本：',
+      'powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"',
+      '或使用 npm 安装：npm install -g @openai/codex',
+      '注意：不要用 npm install -g codex，那会装成另一个同名静态站点生成器。',
+    ],
+  },
+  {
+    title: 'macOS 安装 Codex CLI',
+    platform: 'macOS',
+    status: '有效',
+    lastVerified: '2026-06-29',
+    steps: [
+      '打开终端，执行官方安装脚本：',
+      'curl -fsSL https://chatgpt.com/codex/install.sh | sh',
+      '或使用 npm 安装：npm install -g @openai/codex',
+      '安装完成后运行 codex --version 确认。',
+    ],
+  },
+  {
+    title: 'VS Code 安装 Codex 扩展',
+    platform: 'VS Code',
+    status: '有效',
+    lastVerified: '2026-06-29',
+    steps: [
+      '打开 VS Code，进入扩展市场（Ctrl+Shift+X）。',
+      '搜索 "OpenAI Codex" 或 "Codex"。',
+      '点击安装，安装完成后侧边栏出现 Codex 图标。',
+      '点击图标，按提示登录 OpenAI 账号。',
+    ],
+  },
+  {
+    title: '安装 Codex 桌面应用',
+    platform: 'Windows / macOS',
+    status: '部分受限',
+    lastVerified: '2026-06-29',
+    steps: [
+      'Windows：通过 Microsoft Store 搜索 "Codex" 安装。',
+      '若提示"所在地区不可用"，需将 Microsoft Store 地区切换为美国。',
+      'macOS：访问官网下载 .dmg 安装包。',
+      '安装后首次启动需登录 OpenAI 账号。',
+    ],
+  },
+];
+
+const authGuides = [
+  { title: 'OpenAI 账号注册', desc: '邮箱、IP、环境要求与注意事项', icon: '📋', href: '/docs/codex/auth/register' },
+  { title: 'API Key 创建与验证', desc: '在 platform.openai.com 创建首个 Key 时触发手机号验证', icon: '🔑', href: '/docs/codex/auth/api-key' },
+  { title: 'auth.json 配置', desc: 'CLI 登录凭据管理，~/.codex/auth.json', icon: '⚙️', href: '/docs/codex/auth/auth-json' },
+  { title: 'config.toml 配置', desc: '模型、权限、自定义 provider 配置', icon: '🔧', href: '/docs/codex/auth/config-toml' },
+  { title: 'API 中转方案', desc: '配置 base_url 接入第三方中转服务', icon: '🌐', href: '/docs/codex/auth/api-proxy' },
+  { title: '手机号验证解决', desc: '+86 号码无法接码的替代方案', icon: '📱', href: '/docs/codex/auth/phone-verification' },
+];
+
+const errorCodes = [
+  { code: "npm install -g codex", desc: '装错包了。正确包名是 @openai/codex', severity: '低', solution: '卸载后改用 npm install -g @openai/codex', href: '/docs/codex/errors/npm-wrong-package' },
+  { code: 'PropertyNotFoundException', desc: 'Windows 安装脚本的已知问题', severity: '中', solution: '使用 powershell -ExecutionPolicy ByPass -c 包装命令', href: '/docs/codex/errors/property-not-found' },
+  { code: "'codex' is not recognized", desc: 'PATH 未正确配置', severity: '低', solution: '重启终端，或手动将 npm 全局 bin 目录加入 PATH', href: '/docs/codex/errors/codex-not-recognized' },
+  { code: 'Microsoft Store 不可用', desc: '桌面应用在部分地区商店不可见', severity: '中', solution: '将 Microsoft Store 地区切换为美国后重试', href: '/docs/codex/errors/store-unavailable' },
+  { code: 'Verify your phone number', desc: '创建首个 API Key 时触发手机号验证', severity: '高', solution: '使用海外实体卡或长期独占云号码接码', href: '/docs/codex/errors/verify-phone-number' },
+  { code: 'Number already used or limit reached', desc: '号码绑定账号达上限', severity: '高', solution: '更换新的长期独占号码', href: '/docs/codex/errors/number-already-used' },
+  { code: 'API 连接超时', desc: '网络环境不稳定或代理配置问题', severity: '中', solution: '检查代理设置，配置 HTTPS_PROXY 环境变量', href: '/docs/codex/errors/api-timeout' },
+  { code: '3221225781', desc: 'Windows 上 Codex 崩溃退出码', severity: '高', solution: '更新到最新版本，检查系统兼容性', href: '/docs/codex/errors/crash-3221225781' },
+];
+---
+
+<BaseLayout title="OpenAI Codex 专区 - Codex & Claude 通关站">
+  <section class="bg-gray-900 text-white">
+    <div class="container-page py-16">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-14 h-14 rounded-xl bg-white text-gray-900 flex items-center justify-center font-bold text-2xl">O</div>
+        <div>
+          <h1 class="text-3xl font-bold">OpenAI Codex</h1>
+          <p class="text-gray-400">AI 编程 Agent · 四种形态 · 中文通关指南</p>
+        </div>
+      </div>
+      <p class="text-gray-300 max-w-2xl">Codex 是 OpenAI 推出的 AI 编程代理，支持桌面应用、VS Code 插件、命令行工具和 ChatGPT 内置使用。本专区解决安装、认证、验证、配置与常见错误。</p>
+      <div class="flex flex-wrap gap-2 mt-6">
+        <a href="#install" class="tag bg-white/10 text-white hover:bg-white/20">安装教程</a>
+        <a href="#auth" class="tag bg-white/10 text-white hover:bg-white/20">账号认证</a>
+        <a href="#errors" class="tag bg-white/10 text-white hover:bg-white/20">错误码</a>
+        <a href="#forms" class="tag bg-white/10 text-white hover:bg-white/20">产品形态</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="forms" class="container-page py-16">
+    <h2 class="section-title">四种产品形态</h2>
+    <p class="text-gray-500 mb-8">根据使用场景选择合适的入口</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-200 text-left text-gray-500">
+            <th class="py-3 pr-4 font-medium">形态</th>
+            <th class="py-3 pr-4 font-medium">平台</th>
+            <th class="py-3 pr-4 font-medium">适合人群</th>
+            <th class="py-3 pr-4 font-medium">账号要求</th>
+            <th class="py-3 font-medium">备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          {forms.map((f) => (
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-3 pr-4 font-medium text-gray-900">{f.name}</td>
+              <td class="py-3 pr-4 text-gray-600">{f.platform}</td>
+              <td class="py-3 pr-4 text-gray-600">{f.audience}</td>
+              <td class="py-3 pr-4 text-gray-600">{f.requirement}</td>
+              <td class="py-3 text-gray-500">{f.note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="install" class="bg-white border-y border-gray-100">
+    <div class="container-page py-16">
+      <h2 class="section-title">安装教程</h2>
+      <p class="text-gray-500 mb-8">覆盖 Windows、macOS、VS Code 与桌面应用</p>
+      <div class="grid md:grid-cols-2 gap-6">
+        {installGuides.map((guide) => (
+          <div class="card">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-gray-900">{guide.title}</h3>
+              <span class={`tag ${guide.status === '有效' ? 'tag-green' : 'tag-orange'}`}>{guide.status}</span>
+            </div>
+            <div class="text-xs text-gray-400 mb-3">最后验证：{guide.lastVerified} · {guide.platform}</div>
+            <ol class="space-y-2 text-sm text-gray-600">
+              {guide.steps.map((step, i) => (
+                <li class="flex gap-2">
+                  <span class="text-brand-500 font-mono text-xs mt-0.5">{i + 1}.</span>
+                  <span class={step.includes('npm') || step.includes('curl') || step.includes('powershell') ? 'font-mono text-xs bg-gray-50 px-2 py-1 rounded text-gray-800 block w-full' : ''}>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="auth" class="container-page py-16">
+    <h2 class="section-title">账号与认证</h2>
+    <p class="text-gray-500 mb-8">Codex 的核心门槛在于 OpenAI 账号与手机号验证</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {authGuides.map((g) => (
+        <a href={g.href} class="card group">
+          <div class="text-2xl mb-3">{g.icon}</div>
+          <h3 class="font-medium text-gray-900 mb-1 group-hover:text-brand-600 transition">{g.title}</h3>
+          <p class="text-sm text-gray-500">{g.desc}</p>
+        </a>
+      ))}
+    </div>
+
+      <div class="mt-8 card bg-amber-50 border-amber-200">
+      <h3 class="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+        <span>⚠️</span> 手机号验证核心提示
+      </h3>
+      <p class="text-sm text-amber-800 mb-3">创建首个 API Key 或新设备登录时，OpenAI 会触发手机号验证。+86 号码无法接码，需要：</p>
+      <ul class="text-sm text-amber-800 space-y-1 ml-4 list-disc">
+        <li>使用海外实体 SIM 卡（最稳定，推荐美国/英国号）</li>
+        <li>使用长期独占的云号码（如 DuoPlus 等，避免一次性接码）</li>
+        <li>确保 IP 地区与号码国家一致，避免触发风控</li>
+        <li>切勿使用 Google Voice、TextNow 等 VoIP 号码，会被识别拒绝</li>
+      </ul>
+      <div class="mt-3">
+        <a href="/docs/codex/auth/phone-verification" class="text-sm font-medium text-amber-900 hover:underline">查看手机号验证完整解决方案 →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="errors" class="bg-white border-t border-gray-100">
+    <div class="container-page py-16">
+      <h2 class="section-title">常见错误码</h2>
+      <p class="text-gray-500 mb-8">点击查看详细解决方案</p>
+      <div class="space-y-3">
+        {errorCodes.map((e) => (
+          <a href={e.href} class="card hover:border-brand-300 block">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+              <code class="font-mono text-sm bg-gray-100 px-3 py-1.5 rounded text-gray-800 sm:w-64 flex-shrink-0">{e.code}</code>
+              <p class="text-sm text-gray-600 flex-1">{e.desc}</p>
+              <span class={`tag ${e.severity === '高' ? 'tag-red' : e.severity === '中' ? 'tag-orange' : 'tag-gray'}`}>{e.severity}风险</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100 text-sm flex items-center justify-between">
+              <span><span class="text-gray-400">解决方案：</span><span class="text-gray-700">{e.solution}</span></span>
+              <span class="text-brand-600 text-xs font-medium">查看详情 →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <div class="card bg-gradient-to-r from-brand-600 to-brand-700 text-white text-center">
+      <h2 class="text-xl font-semibold mb-2">遇到没列出的问题？</h2>
+      <p class="text-brand-100 mb-4">使用问题诊断器，输入错误提示即可获取解决方案</p>
+      <a href="/diagnose" class="btn bg-white text-brand-700 hover:bg-brand-50">开始诊断 →</a>
+    </div>
+  </section>
+</BaseLayout>

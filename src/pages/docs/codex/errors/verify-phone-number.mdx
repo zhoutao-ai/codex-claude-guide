@@ -1,0 +1,99 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Verify your phone number — 创建 API Key 时触发手机号验证"
+description: "OpenAI 在创建首个 API Key 或新设备登录时触发手机号验证，+86 号码无法通过，需使用海外号码"
+product: "Codex"
+category: "验证"
+severity: "高"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 [platform.openai.com](https://platform.openai.com) 创建第一个 API Key 时，或在新设备上首次登录 Codex 时，页面弹出：
+
+```
+Verify your phone number
+```
+
+要求输入手机号接收短信验证码。但输入 +86 中国手机号后，要么直接提示不支持，要么验证码永远收不到。
+
+## 错误原因
+
+OpenAI 的手机号验证系统有以下限制：
+
+1. **不支持 +86 号码**：中国大陆手机号被排除在支持列表之外
+2. **拒绝 VoIP 号码**：Google Voice、TextNow 等虚拟号码会被识别并拒绝
+3. **风控检测**：IP 地区与手机号归属地不一致时，可能直接拒绝验证
+4. **号码绑定限制**：每个号码可绑定的账号数量有限
+
+## 解决方案
+
+### 方案一：海外实体 SIM 卡（最稳定，推荐）
+
+**适用人群**：长期使用 OpenAI 服务的开发者
+
+1. 购买一张美国或英国的预付费 SIM 卡（如 Ultra Mobile、Lycamobile）
+2. 激活后确保能接收国际短信
+3. 在验证页面输入该号码
+4. 收到验证码后完成验证
+
+**优点**：最稳定，几乎不会被拒绝
+**缺点**：需要购买实体卡，有一定成本
+
+### 方案二：长期独占云号码
+
+**适用人群**：没有渠道购买实体卡的用户
+
+1. 选择提供**长期独占**号码的接码平台（如 DuoPlus、SMS-Activate 的长期租用服务）
+2. 购买一个美国/英国的长期号码（不是一次性接码）
+3. 在验证页面输入该号码
+4. 通过平台查看收到的验证码
+
+<div class="alert alert-danger">
+<strong>重要警告：</strong>
+<ul>
+<li>不要使用一次性接码平台（如免费接码网站），这些号码已被大量账号使用，几乎必定失败</li>
+<li>不要使用 Google Voice、TextNow 等 VoIP 服务，OpenAI 会直接拒绝</li>
+<li>不要在公开论坛发布你的完整手机号</li>
+</ul>
+</div>
+
+### 方案三：使用 ChatGPT Plus 账号
+
+如果你已经订阅了 ChatGPT Plus / Pro，可以直接在 [chatgpt.com/codex](https://chatgpt.com/codex) 中使用 Codex，无需单独创建 API Key。
+
+ChatGPT Plus 订阅时已完成验证，后续使用 Codex 不需要再次验证手机号。
+
+## 验证流程详细步骤
+
+1. **确保 IP 一致**：VPN/代理的 IP 国家应与手机号归属国一致（如都用美国）
+2. **打开无痕窗口**：使用浏览器无痕模式访问 platform.openai.com
+3. **登录账号**：使用已注册的 OpenAI 账号登录
+4. **创建 API Key**：进入 API Keys 页面，点击 Create new key
+5. **输入手机号**：选择正确的国家区号，输入号码
+6. **接收验证码**：等待 1-3 分钟收到短信
+7. **输入验证码**：在页面输入收到的 6 位验证码
+8. **完成验证**：验证通过后即可创建 API Key
+
+## 常见追问
+
+### Q: 验证通过后，以后还需要再次验证吗？
+
+通常不需要。验证成功后，该号码会绑定到你的账号。后续创建新的 API Key 一般不再需要重新验证。但新设备登录时可能需要。
+
+### Q: 号码被标记为 "already used" 怎么办？
+
+说明该号码已被绑定到其他账号。需要更换一个新的、从未使用过的号码。
+
+### Q: 可以跳过手机号验证吗？
+
+不可以。创建 API Key 时手机号验证是强制步骤。唯一的"绕过"方式是使用 ChatGPT Plus 订阅（已内置验证）。
+
+<div class="alert alert-info">
+<strong>相关阅读：</strong>
+<ul>
+<li><a href="/docs/codex/auth/api-key">API Key 创建与验证完整流程</a></li>
+<li><a href="/docs/codex/auth/phone-verification">手机号验证解决方案详解</a></li>
+</ul>
+</div>

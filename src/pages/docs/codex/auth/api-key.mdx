@@ -1,0 +1,185 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "API Key 创建与验证完整流程"
+description: "在 platform.openai.com 创建首个 API Key 的完整步骤，包括手机号验证触发与处理"
+product: "Codex"
+category: "认证"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+Codex CLI 支持两种认证方式：
+
+1. **ChatGPT 账号登录**：使用 ChatGPT Plus/Pro 订阅账号登录（推荐，无需单独创建 API Key）
+2. **API Key 认证**：在 platform.openai.com 创建 API Key 并配置到 Codex CLI
+
+本指南详细介绍第二种方式的完整流程。
+
+## 前提条件
+
+- 已注册 OpenAI 账号（参考[账号注册指南](/docs/codex/auth/register)）
+- 已完成手机号验证
+- 网络环境正常（可访问 platform.openai.com）
+
+## 创建 API Key 步骤
+
+### 第一步：登录平台
+
+1. 访问 [platform.openai.com](https://platform.openai.com)
+2. 使用 OpenAI 账号登录
+
+### 第二步：进入 API Keys 页面
+
+1. 点击左侧导航栏的 **"API keys"**
+2. 点击 **"Create new secret key"**
+
+### 第三步：触发手机号验证（首次创建时）
+
+如果是第一次创建 API Key，系统会要求验证手机号。
+
+<div class="alert alert-warning">
+<strong>注意：</strong>如果你的账号在注册时已经验证过手机号，这一步可能不会出现。但如果 OpenAI 风控系统认为需要重新验证，仍可能弹出此步骤。
+</div>
+
+验证流程：
+1. 选择国家区号（如 +1 美国）
+2. 输入手机号码
+3. 点击 "Send code"
+4. 等待接收短信（1-3 分钟）
+5. 输入 6 位验证码
+6. 点击 "Verify"
+
+详细验证方案见[手机号验证解决方案](/docs/codex/auth/phone-verification)。
+
+### 第四步：配置 Key 信息
+
+1. **Name**：为 Key 命名，便于管理（如 "codex-cli-personal"）
+2. **Project**：选择所属项目（默认即可）
+3. **Permissions**：选择权限级别
+   - **All**：完整权限（推荐开发使用）
+   - **Restricted**：受限权限（生产环境推荐）
+
+### 第五步：生成并保存 Key
+
+1. 点击 "Create secret key"
+2. **立即复制并保存**生成的 Key
+
+<div class="alert alert-danger">
+<strong>重要：</strong>API Key 只在创建时显示一次！关闭弹窗后无法再次查看。务必保存到安全的地方（如密码管理器）。如果丢失，只能删除旧 Key 重新创建。
+</div>
+
+Key 格式示例：
+```
+sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## 配置到 Codex CLI
+
+### 方式一：环境变量（推荐）
+
+**macOS / Linux：**
+
+```bash
+# 临时设置
+export OPENAI_API_KEY="sk-proj-xxxxxxxxxxxx"
+
+# 永久设置
+echo 'export OPENAI_API_KEY="sk-proj-xxxxxxxxxxxx"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Windows PowerShell：**
+
+```powershell
+# 临时设置
+$env:OPENAI_API_KEY = "sk-proj-xxxxxxxxxxxx"
+
+# 永久设置（用户级）
+[System.Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-proj-xxxxxxxxxxxx", "User")
+```
+
+### 方式二：auth.json 配置
+
+编辑 `~/.codex/auth.json`：
+
+```json
+{
+  "api_key": "sk-proj-xxxxxxxxxxxx"
+}
+```
+
+详见 [auth.json 配置指南](/docs/codex/auth/auth-json)。
+
+### 方式三：使用 ChatGPT 账号登录
+
+如果你有 ChatGPT Plus/Pro 订阅，可以直接登录：
+
+```bash
+codex
+# 首次运行会提示登录
+# 选择 "Log in with ChatGPT"
+# 浏览器会打开授权页面
+# 授权后返回终端即可使用
+```
+
+## 验证 API Key 是否有效
+
+```bash
+# 测试 API 连通性
+curl https://api.openai.com/v1/models \
+  -H "Authorization: Bearer sk-proj-xxxxxxxxxxxx"
+
+# 应返回模型列表 JSON
+```
+
+或在 Codex CLI 中直接测试：
+
+```bash
+codex "say hello"
+```
+
+## API Key 管理最佳实践
+
+### 设置使用限额
+
+1. 进入 platform.openai.com → **Settings** → **Limits**
+2. 设置月度消费上限（如 $10/月）
+3. 设置后超出限额 API 将自动停止调用
+
+### 定期轮换 Key
+
+1. 每隔 3-6 个月创建新 Key
+2. 更新 Codex CLI 配置
+3. 删除旧 Key
+
+### 监控使用量
+
+1. 进入 **Usage** 页面查看消费明细
+2. 设置用量告警（到达阈值时邮件通知）
+3. 关注异常用量（可能 Key 被泄露）
+
+## 常见问题
+
+### Q: API Key 被拒绝（401 Unauthorized）？
+
+可能原因：
+- Key 已过期或被删除
+- Key 输入有误（检查首尾空格）
+- 账号已被封禁
+- 余额不足或超出限额
+
+### Q: 如何查看 API 余额？
+
+访问 [platform.openai.com/settings/organization/billing](https://platform.openai.com/settings/organization/billing) 查看。
+
+### Q: 新账号有免费额度吗？
+
+OpenAI 会不定期提供免费试用额度。目前新注册账号可能有少量免费额度，但建议绑定信用卡以备正常使用。
+
+## 相关阅读
+
+- [OpenAI 账号注册](/docs/codex/auth/register)
+- [手机号验证解决方案](/docs/codex/auth/phone-verification)
+- [auth.json 配置](/docs/codex/auth/auth-json)
+- [config.toml 配置](/docs/codex/auth/config-toml)

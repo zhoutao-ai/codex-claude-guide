@@ -1,0 +1,122 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "VoIP numbers are not accepted — 虚拟号被拒"
+description: "Claude 明确拒绝 VoIP 号码，需停用 Google Voice / TextNow 等虚拟号服务，改用实体卡"
+product: "Claude"
+category: "验证"
+severity: "高"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 Claude.ai 注册时输入手机号后，收到明确提示：
+
+```
+VoIP numbers are not accepted.
+```
+
+或：
+
+```
+We do not accept virtual phone numbers. Please use a real mobile number.
+```
+
+## 错误原因
+
+Anthropic 使用号码线路类型（line type）检测技术，能精准识别以下 VoIP 号码：
+
+| VoIP 服务 | 号码格式 | 是否被拒 |
+|---|---|---|
+| Google Voice | +1 美国号 | ✗ 被拒 |
+| TextNow | +1 美国号 | ✗ 被拒 |
+| TextFree | +1 美国号 | ✗ 被拒 |
+| Skype Number | 多国号 | ✗ 被拒 |
+| Burner | +1 美国号 | ✗ 被拒 |
+| Hushed | 多国号 | ✗ 被拒 |
+| DingTone | 多国号 | ✗ 被拒 |
+
+所有通过 App 获取的、无实体 SIM 卡的号码都属于 VoIP，都会被 Claude 拒绝。
+
+## 与 "Unsupported phone line type" 的区别
+
+这两个错误的含义基本相同，但措辞不同：
+
+- **VoIP numbers are not accepted**：明确告诉你号码是 VoIP 类型
+- **Unsupported phone line type**：更通用的提示，可能是 VoIP 或其他非传统线路
+
+两者解决方案相同：**更换为实体 SIM 卡**。
+
+## 解决方案
+
+### 第一步：停用所有 VoIP 号码
+
+如果你正在使用 Google Voice、TextNow 等服务，它们无法通过 Claude 的验证。不要再尝试使用这些号码。
+
+### 第二步：获取实体 SIM 卡
+
+**推荐方案：**
+
+| 方案 | 卡种 | 国家 | 月费 | 购买渠道 |
+|---|---|---|---|---|
+| 最佳 | Ultra Mobile PayGo | 美国 | $3 | 淘宝搜索"Ultra Mobile" |
+| 推荐 | Lycamobile | 美国/英国 | $2-10 | 淘宝/官网 |
+| 推荐 | giffgaff | 英国 | £0-6 | 淘宝/官网 |
+| 可选 | T-Mobile 预付费 | 美国 | $3-10 | 需在美国激活 |
+
+### 第三步：激活并测试
+
+1. 收到 SIM 卡后按说明激活
+2. 将 SIM 卡插入手机（或使用双卡手机）
+3. 测试是否能接收短信
+4. 确认号码归属国与 VPN IP 一致
+5. 在 Claude 注册页面输入号码
+
+### 第四步：如无法购买实体卡
+
+使用**长期独占**的云号码（非 VoIP 类型）：
+
+- **DuoPlus**：部分号码是实体线路转接，非纯 VoIP
+- **SMS-Activate 长期租用**：选择标注为"Mobile"的号码
+
+<div class="alert alert-warning">
+<strong>注意：</strong>即使是付费云号码，如果底层是 VoIP 线路，仍可能被 Claude 拒绝。购买前确认号码类型为 "Mobile" 或 "Physical"。
+</div>
+
+## 如何验证号码是否为 VoIP
+
+### 方法一：在线查询
+
+使用 [freecarrierlookup.com](https://www.freecarrierlookup.com) 输入号码查询：
+
+- 如果显示 **"Wireless"** 或 **"Mobile"**：实体线路，可用
+- 如果显示 **"VoIP"** 或 **"Non-Fixed VOIP"**：虚拟号码，不可用
+
+### 方法二：判断号码来源
+
+- 如果号码来自**实体 SIM 卡**：通常是实体线路
+- 如果号码来自**App/网页**：通常是 VoIP
+
+### 方法三：Google Voice 特殊判断
+
+所有 Google Voice 号码都是 VoIP，无论你是否在手机上使用了 Google Voice App。Google Voice 的号码底层是 Bandwidth.com 等 VoIP 运营商。
+
+## 常见问题
+
+### Q: 我有 Google Voice 号码，有没有办法让它通过？
+
+没有。Claude 的检测系统会直接识别 Google Voice 号码的线路类型，无法绕过。
+
+### Q: 实体 SIM 卡但通过 Wi-Fi Calling 使用，算 VoIP 吗？
+
+不算。只要号码本身是实体 SIM 卡分配的，即使使用 Wi-Fi Calling 功能，线路类型仍然是 "Wireless"，可以通过验证。
+
+### Q: eSIM 算实体卡吗？
+
+是的。eSIM 是嵌入式 SIM，号码来自传统运营商，线路类型为 "Wireless"，可以通过 Claude 验证。如果你有支持 eSIM 的手机，可以购买海外 eSIM 方案。
+
+## 相关阅读
+
+- [Unsupported phone line type 详解](/docs/claude/errors/unsupported-phone)
+- [Claude 手机号验证完整指南](/docs/claude/guides/phone-verification)
+- [Claude 注册完整流程](/docs/claude/guides/registration)

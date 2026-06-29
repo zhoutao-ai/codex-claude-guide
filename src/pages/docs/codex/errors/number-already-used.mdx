@@ -1,0 +1,88 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Number already used or limit reached — 号码绑定达上限"
+description: "OpenAI 提示手机号已被使用或绑定账号达上限时的原因分析与解决方案"
+product: "Codex"
+category: "验证"
+severity: "高"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 OpenAI 手机号验证页面输入号码后，收到以下提示：
+
+```
+This number is already in use or has reached its limit.
+```
+
+或：
+
+```
+This phone number has been used too many times.
+```
+
+无法继续完成验证。
+
+## 错误原因
+
+OpenAI 对手机号有以下限制规则：
+
+1. **单号绑定上限**：每个手机号最多可绑定有限个 OpenAI 账号（通常为 2-3 个）
+2. **一次性接码被标记**：公共接码平台的号码被大量用户使用后，会被 OpenAI 加入黑名单
+3. **回收号码风险**：如果你购买的是二手 SIM 卡，前主人可能已经用该号码注册过 OpenAI
+
+## 解决方案
+
+### 第一步：确认是否自己之前用过
+
+如果你有多个 OpenAI 账号，检查是否已在其他账号上绑定过该号码。如果是，可以：
+
+- 登录之前的账号，在设置中解绑该号码
+- 等待解绑生效后（通常需要 24 小时），在新账号上使用
+
+### 第二步：更换为全新号码
+
+如果确认不是自己使用的，说明该号码已被他人占用或被标记。唯一解决方案是**更换一个从未用于 OpenAI 验证的新号码**。
+
+#### 推荐渠道
+
+| 渠道 | 类型 | 稳定性 | 成本 |
+|---|---|---|---|
+| 海外实体 SIM 卡 | 实体 | 极高 | 中（购卡费+月租） |
+| DuoPlus 长期号码 | 云号码 | 高 | 低-中 |
+| SMS-Activate 长期租用 | 云号码 | 中高 | 低 |
+
+<div class="alert alert-warning">
+<strong>关键原则：</strong>购买的号码必须是<strong>独占的</strong>（dedicated），不是共享的（shared）。独占号码只有你能接收短信，不会被其他用户使用。
+</div>
+
+### 第三步：注意环境一致性
+
+更换号码后，确保：
+
+1. **IP 地区一致**：VPN/代理 IP 的国家与号码归属国一致
+2. **浏览器干净**：使用无痕模式或清除 Cookie 后操作
+3. **间隔时间**：如果之前尝试失败多次，等待 24 小时后再用新号码验证
+
+## 预防措施
+
+- **一号新号**：每个 OpenAI 账号使用独立的、从未注册过的手机号
+- **不要共享号码**：不要将同一号码用于多个账号
+- **保留号码所有权**：确保你能长期持有该号码，以备后续重新验证
+
+## 与 "Unsupported phone line type" 的区别
+
+| 错误提示 | 含义 | 解决方向 |
+|---|---|---|
+| Number already used | 号码已被用完配额 | 换新号码 |
+| Unsupported phone line type | 号码类型不被支持（VoIP等） | 换实体卡 |
+| Verify your phone number | 需要验证 | 提供有效号码 |
+
+<div class="alert alert-info">
+<strong>相关阅读：</strong>
+<ul>
+<li><a href="/docs/codex/errors/verify-phone-number">Verify your phone number 详解</a></li>
+<li><a href="/docs/codex/auth/phone-verification">手机号验证解决方案</a></li>
+</ul>
+</div>

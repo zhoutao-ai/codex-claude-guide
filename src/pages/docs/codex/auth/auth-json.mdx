@@ -1,0 +1,194 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "auth.json 配置详解"
+description: "Codex CLI 登录凭据管理文件 ~/.codex/auth.json 的配置方法与注意事项"
+product: "Codex"
+category: "认证"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+`auth.json` 是 Codex CLI 的认证凭据文件，位于 `~/.codex/auth.json`。它存储了 API Key 或 ChatGPT 登录令牌，Codex CLI 每次启动时会读取此文件进行认证。
+
+## 文件位置
+
+| 操作系统 | 路径 |
+|---|---|
+| macOS / Linux | `~/.codex/auth.json` |
+| Windows | `C:\Users\<用户名>\.codex\auth.json` |
+
+## 文件格式
+
+### 方式一：使用 API Key
+
+```json
+{
+  "api_key": "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+### 方式二：ChatGPT 账号登录（自动生成）
+
+当你执行 `codex` 并选择 "Log in with ChatGPT" 后，Codex 会自动生成 auth.json：
+
+```json
+{
+  "tokens": {
+    "id_token": "eyJhbGciOi...",
+    "access_token": "eyJhbGciOi...",
+    "refresh_token": "eyJhbGciOi..."
+  },
+  "OPENAI_API_KEY": null
+}
+```
+
+这些 token 会自动刷新，无需手动管理。
+
+## 手动配置步骤
+
+### 第一步：创建 .codex 目录
+
+```bash
+# macOS / Linux
+mkdir -p ~/.codex
+
+# Windows PowerShell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex"
+```
+
+### 第二步：创建 auth.json
+
+```bash
+# macOS / Linux
+cat > ~/.codex/auth.json << 'EOF'
+{
+  "api_key": "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+EOF
+
+# Windows PowerShell
+@'
+{
+  "api_key": "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+'@ | Set-Content "$env:USERPROFILE\.codex\auth.json"
+```
+
+### 第三步：设置文件权限
+
+为安全起见，限制文件访问权限：
+
+```bash
+# macOS / Linux
+chmod 600 ~/.codex/auth.json
+
+# Windows (PowerShell)
+icacls "$env:USERPROFILE\.codex\auth.json" /inheritance:r /grant:r "$env:USERNAME:(R)"
+```
+
+### 第四步：验证配置
+
+```bash
+codex --version
+codex "test connection"
+```
+
+## 切换认证方式
+
+### 从 API Key 切换到 ChatGPT 登录
+
+1. 删除或备份 auth.json：
+
+```bash
+mv ~/.codex/auth.json ~/.codex/auth.json.bak
+```
+
+2. 重新运行 codex，选择 ChatGPT 登录：
+
+```bash
+codex
+```
+
+### 从 ChatGPT 登录切换到 API Key
+
+1. 编辑 auth.json，替换为 API Key 格式
+2. 或删除 auth.json 后设置环境变量：
+
+```bash
+rm ~/.codex/auth.json
+export OPENAI_API_KEY="sk-proj-xxxxxxxxxxxx"
+codex
+```
+
+## 多账号管理
+
+如果你有多个 OpenAI 账号，可以通过切换 auth.json 来切换账号：
+
+### 方案一：手动切换
+
+```bash
+# 保存当前配置
+cp ~/.codex/auth.json ~/.codex/auth-personal.json
+
+# 切换到工作账号
+cp ~/.codex/auth-work.json ~/.codex/auth.json
+
+# 切换回个人账号
+cp ~/.codex/auth-personal.json ~/.codex/auth.json
+```
+
+### 方案二：使用环境变量覆盖
+
+auth.json 中的配置可以被环境变量覆盖：
+
+```bash
+# 临时使用另一个 API Key
+OPENAI_API_KEY="sk-proj-work-account-key" codex "task"
+```
+
+## 安全注意事项
+
+<div class="alert alert-danger">
+<strong>安全红线：</strong>
+<ul>
+<li>永远不要将 auth.json 提交到 Git 仓库</li>
+<li>永远不要在公开论坛、聊天群分享 API Key</li>
+<li>永远不要将 auth.json 内容截图发布</li>
+<li>如果 Key 泄露，立即在 platform.openai.com 删除该 Key</li>
+</ul>
+</div>
+
+### .gitignore 配置
+
+在项目根目录的 `.gitignore` 中添加：
+
+```
+.codex/
+*.codex
+auth.json
+```
+
+## 常见问题
+
+### Q: auth.json 不存在怎么办？
+
+Codex CLI 首次运行时如果没有找到 auth.json，会提示你登录。你也可以手动创建该文件。
+
+### Q: auth.json 格式错误？
+
+确保 JSON 格式正确，没有多余的逗号或缺少的引号。可以使用 `jsonlint` 工具验证：
+
+```bash
+cat ~/.codex/auth.json | python -m json.tool
+```
+
+### Q: 修改了 auth.json 但 Codex 没有生效？
+
+重启 Codex CLI。auth.json 在启动时读取，运行中修改不会自动生效。
+
+## 相关阅读
+
+- [API Key 创建与验证](/docs/codex/auth/api-key)
+- [config.toml 配置](/docs/codex/auth/config-toml)
+- [API 中转方案](/docs/codex/auth/api-proxy)

@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const comparison = [
+  { dim: '厂商', codex: 'OpenAI', claude: 'Anthropic' },
+  { dim: '核心模型', codex: 'GPT-5.5 / GPT-5.4 系列', claude: 'Claude 4 Opus / Sonnet' },
+  { dim: '安装方式', codex: '桌面 / VS Code / CLI', claude: 'CLI 为主' },
+  { dim: '账号门槛', codex: 'OpenAI 账号 + 验证', claude: 'Claude 订阅账号' },
+  { dim: '国内手机号', codex: '+86 不可接码', claude: '+86 不可接码' },
+  { dim: '订阅费用', codex: '随 ChatGPT Plus/Pro', claude: '需 Claude Pro/Max/Team' },
+  { dim: '适用场景', codex: '全栈项目、快速原型', claude: '大型代码库重构、深度分析' },
+  { dim: '响应速度', codex: '较快', claude: '深度思考模式较慢但更稳' },
+  { dim: '上下文长度', codex: '较大', claude: '200K token' },
+  { dim: 'MCP 支持', codex: '支持（0.101+）', claude: '支持' },
+];
+
+const scenarios = [
+  { scenario: '纯新手 / 想零配置体验', recommend: 'Codex', reason: '桌面应用或 VS Code 扩展开箱即用，无需额外配置终端环境', color: 'blue' },
+  { scenario: '已有 ChatGPT Plus/Pro 订阅', recommend: 'Codex', reason: '无需额外订阅，直接在 ChatGPT 内或用 CLI 调用', color: 'blue' },
+  { scenario: '大型代码库 / 深度工程重构', recommend: 'Claude Code', reason: '200K 长上下文 + Extended Thinking，处理大型项目更稳', color: 'orange' },
+  { scenario: '不想折腾海外手机号/支付', recommend: '第三方 API', reason: '使用 API 中转平台，邮箱注册即可使用，按量计费', color: 'gray' },
+  { scenario: '团队 CI / 自动化脚本', recommend: '两者皆可', reason: 'Codex CLI 或 Claude API，走 API Key 路径，适合自动化', color: 'gray' },
+  { scenario: '追求响应速度', recommend: 'Codex', reason: '响应更快，适合频繁迭代和快速原型', color: 'blue' },
+];
+---
+
+<BaseLayout title="Codex vs Claude Code 对比 - Codex & Claude 通关站">
+  <section class="bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <div class="container-page py-16 text-center">
+      <h1 class="text-4xl font-bold mb-4">Codex vs Claude Code</h1>
+      <p class="text-gray-400 max-w-2xl mx-auto">两款顶级 AI 编程工具的全维度对比，帮你选出最适合的那一个</p>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <h2 class="section-title">全维度对比</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b-2 border-gray-200">
+            <th class="py-3 pr-4 text-left font-medium text-gray-500">对比维度</th>
+            <th class="py-3 pr-4 text-left font-medium text-gray-900">
+              <span class="inline-flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-gray-900 text-white flex items-center justify-center text-xs font-bold">O</span>
+                OpenAI Codex
+              </span>
+            </th>
+            <th class="py-3 text-left font-medium text-gray-900">
+              <span class="inline-flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-accent-600 text-white flex items-center justify-center text-xs font-bold">A</span>
+                Anthropic Claude
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {comparison.map((c) => (
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-3 pr-4 font-medium text-gray-500">{c.dim}</td>
+              <td class="py-3 pr-4 text-gray-700">{c.codex}</td>
+              <td class="py-3 text-gray-700">{c.claude}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="bg-white border-y border-gray-100">
+    <div class="container-page py-16">
+      <h2 class="section-title">使用场景推荐</h2>
+      <p class="text-gray-500 mb-8">根据你的具体情况，选择最合适的工具</p>
+      <div class="space-y-4">
+        {scenarios.map((s) => (
+          <div class="card flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-1">
+              <h3 class="font-medium text-gray-900 mb-1">{s.scenario}</h3>
+              <p class="text-sm text-gray-500">{s.reason}</p>
+            </div>
+            <div class="flex-shrink-0">
+              <span class={`tag tag-${s.color} text-sm px-4 py-2`}>推荐：{s.recommend}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16">
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-gray-900 text-white flex items-center justify-center font-bold">O</div>
+          <h3 class="text-lg font-semibold">Codex 的优势</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 响应速度快，适合频繁迭代</li>
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 四种形态，入口丰富</li>
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 已有 ChatGPT Plus 即可用，无需额外订阅</li>
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 支持 MCP 协议，生态扩展性强</li>
+          <li class="flex items-start gap-2"><span class="text-red-500">−</span> 手机号验证门槛较高</li>
+          <li class="flex items-start gap-2"><span class="text-red-500">−</span> 深度思考能力略弱于 Claude</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-accent-600 text-white flex items-center justify-center font-bold">A</div>
+          <h3 class="text-lg font-semibold">Claude Code 的优势</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 200K 超长上下文，适合大型项目</li>
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> Extended Thinking 深度分析强</li>
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 代码重构与多文件修改更稳</li>
+          <li class="flex items-start gap-2"><span class="text-green-500">+</span> 终端原生体验，开发者友好</li>
+          <li class="flex items-start gap-2"><span class="text-red-500">−</span> 需额外订阅 Pro/Max</li>
+          <li class="flex items-start gap-2"><span class="text-red-500">−</span> 注册手机号验证更严格</li>
+          <li class="flex items-start gap-2"><span class="text-red-500">−</span> 深度模式响应较慢</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page pb-16">
+    <div class="card bg-gradient-to-r from-brand-600 to-accent-600 text-white text-center">
+      <h2 class="text-xl font-semibold mb-2">还是拿不准？</h2>
+      <p class="mb-4 text-white/90">使用快速开始向导，根据你的情况推荐最优路径</p>
+      <a href="/quick-start" class="btn bg-white text-gray-900 hover:bg-gray-100">开始向导 →</a>
+    </div>
+  </section>
+</BaseLayout>

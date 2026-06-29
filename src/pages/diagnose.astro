@@ -1,0 +1,224 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const diagnoseData = {
+  codex: {
+    install: [
+      { error: "npm install -g codex 装错包", cause: '包名错误，codex 是另一个静态站点生成器', risk: '低', steps: ['卸载错误包：npm uninstall -g codex', '安装正确包：npm install -g @openai/codex', '运行 codex --version 确认'] },
+      { error: "PropertyNotFoundException", cause: 'Windows 安装脚本的已知问题', risk: '中', steps: ['不要直接用 irm ... | iex', '改用：powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"', '若仍失败，改用 npm install -g @openai/codex'] },
+      { error: "'codex' is not recognized", cause: 'PATH 未正确配置', risk: '低', steps: ['关闭并重新打开终端', '检查 npm 全局 bin 路径是否在 PATH 中', 'Windows 可运行 npm config get prefix 查看路径'] },
+      { error: "Microsoft Store 不可用", cause: '桌面应用在部分地区商店不可见', risk: '中', steps: ['打开 Windows 设置 → 时间和语言 → 区域', '将地区切换为美国', '重新打开 Microsoft Store 搜索 Codex'] },
+    ],
+    verify: [
+      { error: "Verify your phone number", cause: '创建首个 API Key 或新设备登录触发验证', risk: '高', steps: ['准备海外实体 SIM 卡或长期独占云号码', '确保 IP 地区与号码国家一致', '关闭所有代理工具后重试', '若号码不可用，考虑第三方 API 中转方案'] },
+      { error: "Number already used or limit reached", cause: '号码绑定账号达上限', risk: '高', steps: ['该号码无法再用，需更换新号码', '使用长期独占云号码避免此问题', '切勿使用一次性接码平台'] },
+    ],
+    network: [
+      { error: "API 连接超时", cause: '网络环境不稳定或代理配置问题', risk: '中', steps: ['检查代理软件是否正常运行', '设置 HTTPS_PROXY 环境变量', '尝试切换节点或协议', '确认防火墙未拦截 codex 进程'] },
+    ],
+  },
+  claude: {
+    register: [
+      { error: "注册页面打不开", cause: '网络环境问题', risk: '低', steps: ['确认网络可正常访问海外站点', '使用稳定的住宅 IP，避免免费节点', '清除浏览器缓存或使用无痕模式'] },
+      { error: "邮箱不被接受", cause: '使用了国内邮箱或临时邮箱', risk: '低', steps: ['改用 Gmail（推荐）', '其次使用 Outlook、Protonmail', '禁用 QQ、163 等国内邮箱'] },
+    ],
+    verify: [
+      { error: "Unsupported phone line type", cause: 'VoIP / 虚拟号 / 座机被识别', risk: '高', steps: ['停止使用 Google Voice、TextNow 等虚拟号', '更换为海外实体 SIM 卡', '或使用长期独占的云号码服务', '确保 IP 与号码国家一致'] },
+      { error: "phone_number_temp_blocked", cause: '试错过多，号码被临时锁定', risk: '中', steps: ['等待 24 小时再试', '期间不要重复请求验证码', '可更换号码或网络环境后重试'] },
+      { error: "Number already used too many times", cause: '号码绑定账号达上限', risk: '高', steps: ['该号码已无法使用', '更换长期独占号码', '避免使用被多人共享的接码号码'] },
+      { error: "VoIP numbers are not accepted", cause: '虚拟号被系统识别拒绝', risk: '高', steps: ['立即停用所有 VoIP 号码', '更换为实体移动线路', '使用 Google / Apple 账号关联注册可能跳过验证'] },
+      { error: "验证码已发送但收不到", cause: '区号不在官方服务区', risk: '高', steps: ['确认号码归属地为 Anthropic 支持地区', '+86 中国号码不可用', '更换为美国、英国等支持地区的号码'] },
+    ],
+    payment: [
+      { error: "Payment failed / 卡被拒", cause: '国内双币卡被风控', risk: '中', steps: ['尝试使用海外发行的 Visa/Master 信用卡', '或使用第三方代充服务（微信/支付宝）', '确保支付时 IP 与注册时一致', '避免频繁更换支付方式'] },
+      { error: "Claude Code not in plan", cause: '免费计划不含 Claude Code', risk: '中', steps: ['订阅 Claude Pro（$20/月）或更高计划', 'Pro 包含基础 Claude Code 用量', '重度使用建议 Max 5x 或 20x'] },
+    ],
+  },
+};
+---
+
+<BaseLayout title="问题诊断器 - Codex & Claude 通关站">
+  <section class="bg-gradient-to-b from-brand-50 to-white border-b border-gray-100">
+    <div class="container-page py-16 text-center">
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">问题诊断器</h1>
+      <p class="text-gray-600 max-w-2xl mx-auto">选择产品、环节和具体错误，获取原因分析、风险等级与操作步骤。</p>
+    </div>
+  </section>
+
+  <section class="container-page py-12">
+    <div class="max-w-2xl mx-auto">
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-medium step-dot active" data-step="1">1</div>
+          <h2 class="font-semibold text-gray-900">选择产品</h2>
+        </div>
+        <div class="grid grid-cols-2 gap-3 ml-11">
+          <button class="product-btn card text-center hover:border-brand-400" data-product="codex">
+            <div class="w-10 h-10 rounded-lg bg-gray-900 text-white flex items-center justify-center font-bold mx-auto mb-2">O</div>
+            <div class="font-medium text-gray-900">OpenAI Codex</div>
+          </button>
+          <button class="product-btn card text-center hover:border-accent-400" data-product="claude">
+            <div class="w-10 h-10 rounded-lg bg-accent-600 text-white flex items-center justify-center font-bold mx-auto mb-2">A</div>
+            <div class="font-medium text-gray-900">Anthropic Claude</div>
+          </button>
+        </div>
+      </div>
+
+      <div id="step2" class="mb-8 hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-sm font-medium step-dot" data-step="2">2</div>
+          <h2 class="font-semibold text-gray-900">选择环节</h2>
+        </div>
+        <div id="category-list" class="grid grid-cols-2 sm:grid-cols-4 gap-3 ml-11"></div>
+      </div>
+
+      <div id="step3" class="mb-8 hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-sm font-medium step-dot" data-step="3">3</div>
+          <h2 class="font-semibold text-gray-900">选择具体错误</h2>
+        </div>
+        <div id="error-list" class="space-y-2 ml-11"></div>
+      </div>
+
+      <div id="result" class="hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-medium">✓</div>
+          <h2 class="font-semibold text-gray-900">诊断结果</h2>
+        </div>
+        <div class="ml-11 card border-2 border-brand-300">
+          <div class="mb-4">
+            <code class="font-mono text-sm bg-gray-100 px-3 py-1.5 rounded text-gray-800" id="result-error"></code>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4 mb-4">
+            <div class="p-3 bg-gray-50 rounded-lg">
+              <div class="text-xs text-gray-400 mb-1">可能原因</div>
+              <div class="text-sm text-gray-700" id="result-cause"></div>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg">
+              <div class="text-xs text-gray-400 mb-1">风险等级</div>
+              <div class="text-sm" id="result-risk"></div>
+            </div>
+          </div>
+          <div class="p-3 bg-brand-50 rounded-lg mb-4">
+            <div class="text-xs text-brand-600 mb-2 font-medium">推荐操作步骤</div>
+            <ol class="text-sm text-gray-700 space-y-1.5" id="result-steps"></ol>
+          </div>
+          <div class="flex gap-2">
+            <a href="/errors" class="btn btn-outline text-sm">查看完整错误码库</a>
+            <button id="reset-btn" class="btn btn-primary text-sm">换一个问题</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ diagnoseData }}>
+  let selectedProduct = null;
+  let selectedCategory = null;
+
+  const categoryLabels = {
+    install: '安装',
+    verify: '验证',
+    register: '注册',
+    payment: '支付',
+    network: '网络',
+  };
+
+  const productBtns = document.querySelectorAll('.product-btn');
+  const step2 = document.getElementById('step2');
+  const step3 = document.getElementById('step3');
+  const result = document.getElementById('result');
+  const categoryList = document.getElementById('category-list');
+  const errorList = document.getElementById('error-list');
+
+  productBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      selectedProduct = btn.dataset.product;
+      productBtns.forEach((b) => b.classList.remove('border-brand-400', 'border-accent-400', 'bg-brand-50', 'bg-accent-50'));
+      btn.classList.add(selectedProduct === 'codex' ? 'border-brand-400', 'bg-brand-50' : 'border-accent-400', 'bg-accent-50');
+      renderCategories();
+      step2.classList.remove('hidden');
+      step3.classList.add('hidden');
+      result.classList.add('hidden');
+      updateStepDots(2);
+    });
+  });
+
+  function renderCategories() {
+    const data = diagnoseData[selectedProduct];
+    categoryList.innerHTML = '';
+    Object.keys(data).forEach((cat) => {
+      const btn = document.createElement('button');
+      btn.className = 'card text-center hover:border-brand-400 text-sm font-medium text-gray-700';
+      btn.textContent = categoryLabels[cat] || cat;
+      btn.dataset.category = cat;
+      btn.addEventListener('click', () => {
+        selectedCategory = cat;
+        document.querySelectorAll('#category-list button').forEach((b) => b.classList.remove('border-brand-400', 'bg-brand-50'));
+        btn.classList.add('border-brand-400', 'bg-brand-50');
+        renderErrors();
+        step3.classList.remove('hidden');
+        result.classList.add('hidden');
+        updateStepDots(3);
+      });
+      categoryList.appendChild(btn);
+    });
+  }
+
+  function renderErrors() {
+    const errors = diagnoseData[selectedProduct][selectedCategory];
+    errorList.innerHTML = '';
+    errors.forEach((e) => {
+      const btn = document.createElement('button');
+      btn.className = 'card w-full text-left hover:border-brand-400 text-sm text-gray-700';
+      btn.innerHTML = `<code class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">${e.error}</code>`;
+      btn.addEventListener('click', () => {
+        showResult(e);
+      });
+      errorList.appendChild(btn);
+    });
+  }
+
+  function showResult(e) {
+    document.getElementById('result-error').textContent = e.error;
+    document.getElementById('result-cause').textContent = e.cause;
+    const riskEl = document.getElementById('result-risk');
+    riskEl.textContent = e.risk + '风险';
+    riskEl.className = 'text-sm font-medium ' + (e.risk === '高' ? 'text-red-600' : e.risk === '中' ? 'text-orange-600' : 'text-green-600');
+    const stepsOl = document.getElementById('result-steps');
+    stepsOl.innerHTML = '';
+    e.steps.forEach((step, i) => {
+      const li = document.createElement('li');
+      li.className = 'flex gap-2';
+      li.innerHTML = `<span class="text-brand-500 font-mono text-xs mt-0.5">${i + 1}.</span><span>${step}</span>`;
+      stepsOl.appendChild(li);
+    });
+    result.classList.remove('hidden');
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    selectedProduct = null;
+    selectedCategory = null;
+    productBtns.forEach((b) => b.classList.remove('border-brand-400', 'border-accent-400', 'bg-brand-50', 'bg-accent-50'));
+    step2.classList.add('hidden');
+    step3.classList.add('hidden');
+    result.classList.add('hidden');
+    updateStepDots(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  function updateStepDots(activeStep) {
+    document.querySelectorAll('.step-dot').forEach((dot) => {
+      const step = parseInt(dot.dataset.step);
+      if (step <= activeStep) {
+        dot.classList.remove('bg-gray-100', 'text-gray-400');
+        dot.classList.add('bg-brand-100', 'text-brand-600');
+      } else {
+        dot.classList.remove('bg-brand-100', 'text-brand-600');
+        dot.classList.add('bg-gray-100', 'text-gray-400');
+      }
+    });
+  }
+</script>

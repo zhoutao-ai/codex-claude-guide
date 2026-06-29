@@ -1,0 +1,297 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Claude Code 安装完整教程"
+description: "Claude Code CLI 的系统要求、多平台安装方法、认证配置与常见安装问题"
+product: "Claude"
+category: "安装"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+Claude Code 是 Anthropic 推出的终端编程 Agent，可以在终端中直接与 Claude 交互，进行代码编写、调试、重构等操作。本教程介绍在各个平台上的安装方法。
+
+## 系统要求
+
+| 要求 | 最低版本 | 推荐版本 |
+|---|---|---|
+| macOS | 13 (Ventura) | 14+ (Sonoma) |
+| Windows | 10 1809 | 11 |
+| Ubuntu | 20.04 | 22.04+ |
+| 内存 | 4GB | 8GB+ |
+| Node.js | 18+ | 22+ |
+
+## 订阅要求
+
+Claude Code **不包含在免费 Claude.ai 计划中**，需要以下任一订阅：
+
+| 计划 | 价格 | Claude Code 用量 |
+|---|---|---|
+| Pro | $20/月 | 基础 |
+| Max 5x | $100/月 | 5x |
+| Max 20x | $200/月 | 20x |
+| Team | $30/人/月 | 团队 |
+| Console (API) | 按 token 计费 | API |
+
+详见 [Claude Code not in plan 详解](/docs/claude/errors/code-not-in-plan)
+
+## 安装方法
+
+### 方法一：官方安装脚本（推荐）
+
+#### macOS / Linux / WSL
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+#### Windows PowerShell
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+**优点：** 官方推荐，支持自动更新
+**缺点：** 需要网络能访问 claude.ai
+
+### 方法二：Homebrew（macOS）
+
+```bash
+brew install --cask claude-code
+```
+
+**优点：** 包管理器统一管理
+**缺点：** 仅 macOS 可用
+
+### 方法三：WinGet（Windows）
+
+```powershell
+winget install Anthropic.ClaudeCode
+```
+
+**优点：** Windows 原生包管理器
+**缺点：** 需要 Windows 10 1809+
+
+### 方法四：npm（全平台）
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+<div class="alert alert-danger">
+<strong>注意：</strong>不要使用 <code>sudo npm install -g</code> 安装。sudo 安装会导致权限问题。如果遇到权限错误，请配置 npm 全局目录或使用其他安装方法。
+</div>
+
+**优点：** 全平台通用
+**缺点：** 需要先安装 Node.js
+
+### 方法五：手动下载
+
+1. 访问 [Claude Code GitHub Releases](https://github.com/anthropics/claude-code/releases)
+2. 下载对应平台的二进制文件
+3. 放到 PATH 目录中
+
+## 安装后配置
+
+### 第一步：验证安装
+
+```bash
+claude --version
+```
+
+应输出类似 `1.x.x` 的版本号。
+
+### 第二步：登录认证
+
+#### 方式 A：使用 Claude 账号登录（订阅用户）
+
+```bash
+claude
+# 首次运行会提示登录
+# 选择 "Log in with Claude account"
+# 浏览器会打开授权页面
+# 使用已订阅 Pro/Max 的 Claude 账号登录
+# 授权后返回终端
+```
+
+#### 方式 B：使用 API Key（API 用户）
+
+1. 在 [console.anthropic.com](https://console.anthropic.com) 获取 API Key
+2. 设置环境变量：
+
+```bash
+# macOS / Linux
+export ANTHROPIC_API_KEY="sk-ant-xxxxxxxxxxxx"
+
+# 永久设置
+echo 'export ANTHROPIC_API_KEY="sk-ant-xxxxxxxxxxxx"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+```powershell
+# Windows PowerShell
+$env:ANTHROPIC_API_KEY = "sk-ant-xxxxxxxxxxxx"
+
+# 永久设置
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-ant-xxxxxxxxxxxx", "User")
+```
+
+3. 运行 claude：
+
+```bash
+claude
+```
+
+### 第三步：测试
+
+```bash
+claude "say hello"
+```
+
+如果 Claude 正常回复，说明安装和配置成功。
+
+## 网络配置
+
+### 代理配置
+
+如果你在中国大陆，需要配置代理才能使用 Claude Code：
+
+**macOS / Linux：**
+
+```bash
+export HTTPS_PROXY=http://127.0.0.1:7890
+export HTTP_PROXY=http://127.0.0.1:7890
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:HTTPS_PROXY = "http://127.0.0.1:7890"
+$env:HTTP_PROXY = "http://127.0.0.1:7890"
+```
+
+将 `7890` 替换为你的代理端口。
+
+### 配置文件
+
+Claude Code 的配置文件位于 `~/.claude/config.json`（或 `~/.claude/settings.json`）：
+
+```json
+{
+  "model": "claude-sonnet-4-20250514",
+  "maxTokens": 8192,
+  "theme": "dark"
+}
+```
+
+## 常用命令
+
+| 命令 | 说明 |
+|---|---|
+| `claude` | 启动交互式会话 |
+| `claude "task"` | 执行单次任务 |
+| `claude --version` | 查看版本 |
+| `claude --help` | 查看帮助 |
+| `claude /config` | 查看当前配置 |
+| `claude /usage` | 查看用量 |
+| `claude /login` | 重新登录 |
+| `claude /logout` | 登出 |
+
+## 常见安装问题
+
+### 问题一：command not found: claude
+
+安装后终端找不到 claude 命令：
+
+1. **重启终端**：关闭并重新打开终端窗口
+2. **检查 PATH**：确认安装目录在 PATH 中
+3. **查看安装位置**：
+
+```bash
+# macOS / Linux
+which claude
+
+# Windows
+where claude
+```
+
+### 问题二：权限错误（npm 安装）
+
+```
+Error: EACCES: permission denied
+```
+
+**解决：** 不要使用 sudo。配置 npm 全局目录：
+
+```bash
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
+
+npm install -g @anthropic-ai/claude-code
+```
+
+### 问题三：网络连接失败
+
+```
+Error: Network request failed
+```
+
+**解决：** 配置代理环境变量（见上文"代理配置"部分）。
+
+### 问题四：Node.js 版本过低
+
+```
+Error: This package requires Node.js >= 18
+```
+
+**解决：** 升级 Node.js：
+
+```bash
+# 使用 nvm
+nvm install 22
+nvm use 22
+```
+
+## 更新 Claude Code
+
+### 自动更新
+
+官方安装脚本和 Homebrew/WinGet 安装的版本支持自动更新。Claude Code 会在启动时检查更新。
+
+### 手动更新
+
+```bash
+# npm 安装的
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew 安装的
+brew upgrade claude-code
+
+# WinGet 安装的
+winget upgrade Anthropic.ClaudeCode
+```
+
+## 卸载
+
+```bash
+# npm
+npm uninstall -g @anthropic-ai/claude-code
+
+# Homebrew
+brew uninstall claude-code
+
+# WinGet
+winget uninstall Anthropic.ClaudeCode
+
+# 清理配置
+rm -rf ~/.claude/
+```
+
+## 相关阅读
+
+- [Claude 注册完整流程](/docs/claude/guides/registration)
+- [Claude 订阅与支付完整指南](/docs/claude/guides/subscription-payment)
+- [Claude Code not in plan 详解](/docs/claude/errors/code-not-in-plan)
+- [Usage limit reached 详解](/docs/claude/errors/usage-limit)

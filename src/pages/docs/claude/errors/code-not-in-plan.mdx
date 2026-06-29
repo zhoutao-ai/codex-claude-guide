@@ -1,0 +1,145 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Claude Code not in plan — 免费计划不含 Claude Code"
+description: "Claude Code 需要订阅 Pro / Max / Team 计划，免费 Claude.ai 用户无法使用"
+product: "Claude"
+category: "订阅"
+severity: "中"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+安装 Claude Code CLI 后尝试使用，收到提示：
+
+```
+Claude Code is not available in your plan.
+```
+
+或：
+
+```
+Your current plan does not include Claude Code access.
+Please upgrade to Pro, Max, or Team plan.
+```
+
+## 错误原因
+
+Claude Code 是 Anthropic 面向开发者的终端编程 Agent，**不包含在免费 Claude.ai 计划中**。使用 Claude Code 需要以下任一订阅：
+
+| 计划 | 价格 | Claude Code 用量 |
+|---|---|---|
+| Free | $0 | ✗ 不包含 |
+| Pro | $20/月 | 基础用量 |
+| Max 5x | $100/月 | 5x 用量 |
+| Max 20x | $200/月 | 20x 用量 |
+| Team | $30/人/月 | 团队用量 |
+| Enterprise | 定制 | 企业级用量 |
+| Console (API) | 按 token 计费 | API 方式使用 |
+
+## 解决方案
+
+### 方案一：订阅 Claude Pro（最经济）
+
+如果你是个人开发者，Pro 套餐是最经济的入门选择：
+
+1. 登录 [claude.ai](https://claude.ai)
+2. 点击 Settings → Billing
+3. 选择 Pro ($20/月)
+4. 完成支付（详见[订阅与支付指南](/docs/claude/guides/subscription-payment)）
+5. 订阅后即可使用 Claude Code
+
+Pro 的 Claude Code 用量适合：
+- 每天使用 1-2 小时的开发者
+- 轻度到中度编程任务
+- 尝试 Claude Code 功能
+
+### 方案二：订阅 Claude Max（重度使用）
+
+如果你是全职开发者，需要大量使用 Claude Code：
+
+- **Max 5x ($100/月)**：适合每天使用 3-5 小时
+- **Max 20x ($200/月)**：适合每天使用 5+ 小时或团队共享
+
+### 方案三：使用 Claude API
+
+如果你不想订阅，可以按 token 计费使用 Claude API：
+
+1. 在 [console.anthropic.com](https://console.anthropic.com) 注册
+2. 充值 API 额度
+3. Claude Code 支持使用 API Key 认证
+
+设置环境变量：
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-xxxxxxxxxxxx"
+```
+
+然后运行 Claude Code，它会自动使用 API 计费。
+
+<div class="alert alert-info">
+<strong>API vs 订阅：</strong>如果你每天使用 Claude Code 超过 3 小时，订阅 Max 更划算。如果只是偶尔使用，API 按量计费更经济。
+</div>
+
+### 方案四：使用替代工具
+
+如果暂时不想付费，可以使用替代方案：
+
+| 工具 | 说明 | 免费额度 |
+|---|---|---|
+| GitHub Copilot | AI 编程助手 | 学生免费 |
+| Cursor | AI 代码编辑器 | 有免费版 |
+| Aider | 开源终端 AI 编程 | 需自带 API Key |
+| Continue.dev | 开源 AI 编程插件 | 需自带 API Key |
+
+## 如何选择套餐
+
+| 使用场景 | 推荐套餐 | 月费 |
+|---|---|---|
+| 偶尔用 Claude Code | API 按量计费 | $5-20 |
+| 每天用 1-2 小时 | Pro | $20 |
+| 每天用 3-5 小时 | Max 5x | $100 |
+| 全职开发 | Max 20x | $200 |
+| 团队协作 | Team ($30/人) | 按人数 |
+
+## 订阅后的配置
+
+1. 确保 Claude Code CLI 已安装（详见[安装教程](/docs/claude/guides/install-code)）
+2. 运行 `claude` 命令
+3. 选择 "Log in with Claude account"
+4. 浏览器会打开授权页面
+5. 使用已订阅的 Claude 账号登录
+6. 授权后返回终端
+
+验证：
+
+```bash
+claude --version
+claude "hello"
+```
+
+## 常见问题
+
+### Q: 订阅了 Pro 但还是提示 not in plan？
+
+可能是登录的账号不对。确保 Claude Code 登录的账号与订阅 Pro 的账号一致。检查方法：
+
+```bash
+claude /config
+```
+
+查看当前登录的账号信息。
+
+### Q: 可以用别人的 Pro 账号吗？
+
+不建议。多人共用账号容易被 Anthropic 检测到并封号。如果你需要团队使用，考虑 Team 套餐。
+
+### Q: API 方式和订阅方式的 Claude Code 功能一样吗？
+
+功能基本一致。API 方式按 token 计费，没有消息条数限制，但费用可能更高（取决于使用量）。
+
+## 相关阅读
+
+- [Claude Code 安装完整教程](/docs/claude/guides/install-code)
+- [Claude 订阅与支付完整指南](/docs/claude/guides/subscription-payment)
+- [Usage limit reached 详解](/docs/claude/errors/usage-limit)

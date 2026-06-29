@@ -1,0 +1,190 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Claude 注册完整流程指南"
+description: "中国大陆用户注册 Claude.ai 的完整四步通关流程：网络环境、邮箱、手机号验证、环境一致性"
+product: "Claude"
+category: "注册"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+Claude 是 Anthropic 推出的 AI 助手，Claude Code 是其终端编程 Agent。对于中国大陆用户，注册 Claude 是使用这些工具的第一步。本指南详细介绍完整的注册流程。
+
+## 注册前提条件
+
+### 必要条件清单
+
+- [ ] 稳定的 VPN/代理（美国或英国节点）
+- [ ] 高权重邮箱（Gmail 推荐）
+- [ ] 海外手机号（实体 SIM 卡最佳）
+- [ ] 干净的浏览器（无痕模式）
+- [ ] 信用卡或第三方代充渠道（订阅时需要）
+
+## 四步通关流程
+
+### 第一步：纯净网络环境
+
+**核心原则：IP 干净、稳定、与后续手机号国家一致。**
+
+#### IP 选择建议
+
+| 地区 | 推荐度 | 说明 |
+|---|---|---|
+| 美国 | ★★★★★ | 最推荐，兼容性最好 |
+| 英国 | ★★★★ | 次推荐 |
+| 澳大利亚 | ★★★ | 可用 |
+| 日本 | ★★ | 可用但号码匹配难 |
+| 免费 VPN | ✗ | IP 被反复使用，极易触发风控 |
+
+#### 环境检查
+
+1. 确认 VPN 已连接且 IP 为目标国家
+2. 使用 [whoer.net](https://whoer.net) 检查 IP 信息
+3. 确认 DNS 也走了代理（防止 DNS 泄漏）
+4. 确认浏览器时区与 IP 国家一致
+
+### 第二步：高权重邮箱
+
+#### 邮箱选择
+
+| 邮箱 | 推荐度 | 说明 |
+|---|---|---|
+| Gmail | ★★★★★ | 权重最高，强烈推荐 |
+| Outlook | ★★★★ | 微软邮箱，权重高 |
+| Protonmail | ★★★★ | 瑞士邮箱，隐私好 |
+| iCloud | ★★★ | 可用 |
+| QQ/163/126 | ✗ | 国内邮箱，可能被拒 |
+| 临时邮箱 | ✗ | 100% 被拒 |
+
+#### 如果没有 Gmail
+
+1. 使用手机注册一个新 Gmail 账号
+2. 注册 Gmail 时使用与 Claude 注册相同的 VPN 节点
+3. 完成 Gmail 手机号验证（可以使用 +86 号码，Google 接受中国号码）
+4. 确保 Gmail 正常收发邮件后，再注册 Claude
+
+### 第三步：海外手机号验证
+
+这是整个流程中最关键也最容易失败的一步。
+
+#### 号码选择
+
+| 号码类型 | 推荐度 | 成功率 | 说明 |
+|---|---|---|---|
+| 海外实体 SIM 卡 | ★★★★★ | 95%+ | 最稳定，几乎不会失败 |
+| 长期独占云号码 | ★★★★ | 80-90% | 需选可信平台 |
+| Google Voice | ✗ | 0% | VoIP，直接被拒 |
+| 一次性接码 | ✗ | 5%以下 | 号码已被大量使用 |
+| +86 中国号码 | ✗ | 0% | 不支持 |
+
+#### 推荐实体 SIM 卡
+
+| 卡种 | 国家 | 月费 | 购买渠道 |
+|---|---|---|---|
+| Ultra Mobile PayGo | 美国 | $3 | 淘宝 |
+| Lycamobile | 美国/英国 | $2-10 | 淘宝 |
+| giffgaff | 英国 | £0-6 | 淘宝 |
+
+#### 替代方案：Google/Apple 账号注册
+
+Claude 支持使用 Google 账号或 Apple ID 直接注册。部分情况下可以跳过手机号验证：
+
+1. 在 claude.ai 注册页面选择 "Continue with Google"
+2. 授权 Google 账号
+3. 如果不要求手机号验证，直接完成注册
+4. 如果仍要求验证，按上述方案准备海外号码
+
+### 第四步：环境一致性
+
+**核心原则：IP 国家、手机号国家、时区、DNS 保持一致。**
+
+#### 检查清单
+
+- [ ] VPN IP 国家 = 手机号归属国
+- [ ] 浏览器时区 = IP 所在时区
+- [ ] 浏览器语言 = en-US 或 en-GB
+- [ ] DNS 不泄漏真实位置
+- [ ] 无痕模式，无旧 Cookie
+
+## 完整注册步骤
+
+### 1. 准备环境
+
+```
+开启 VPN（美国节点）→ 打开 Chrome 无痕模式 → 访问 claude.ai
+```
+
+### 2. 开始注册
+
+1. 访问 [claude.ai](https://claude.ai)
+2. 点击 "Sign up" 或 "Create account"
+3. 选择邮箱注册或 Google/Apple 账号注册
+
+### 3. 邮箱验证（如使用邮箱注册）
+
+1. 输入邮箱地址
+2. 设置密码
+3. 登录邮箱查找 Anthropic 验证邮件
+4. 点击验证链接
+
+### 4. 手机号验证
+
+1. 选择国家区号（如 +1 美国）
+2. 输入手机号码
+3. 点击 "Send verification code"
+4. 等待接收短信（1-5 分钟）
+5. 输入 6 位验证码
+6. 点击 "Verify"
+
+### 5. 完善账号
+
+1. 填写姓名（可用拼音或英文名）
+2. 完成账号设置
+
+### 6. 开始使用
+
+注册成功后，你可以：
+- 使用 Claude.ai 网页版对话
+- 下载 Claude 桌面/移动 App
+- 订阅 Pro/Max 套餐
+- 安装 Claude Code CLI
+
+## 常见失败原因与处理
+
+| 失败场景 | 原因 | 处理 |
+|---|---|---|
+| "not available in your region" | IP 被 Anthropic 识别为不支持地区 | 换 VPN 节点 |
+| "Unsupported phone line type" | 使用了 VoIP 号码 | 换实体 SIM 卡 |
+| "Number already used" | 号码已被绑定太多账号 | 换全新号码 |
+| 验证码收不到 | 区号不在服务区/运营商拦截 | 换支持地区的号码 |
+| "phone_number_temp_blocked" | 尝试太多被临时锁定 | 等 24 小时 |
+
+<div class="alert alert-danger">
+<strong>失败后不要立即重试：</strong>每次失败后至少等待 1 小时再重试。频繁尝试会导致 IP 和号码被永久标记。
+</div>
+
+## 注册成功后的建议
+
+### 1. 保持环境稳定
+
+- 固定使用同一个 VPN 节点（或同一国家的节点）
+- 不要频繁切换 IP 地区
+- 不要在多个设备上同时登录
+
+### 2. 及时订阅（如需 Claude Code）
+
+免费 Claude.ai 不含 Claude Code。如需使用，订阅 Pro ($20/月) 起。
+
+### 3. 保存注册信息
+
+- 记录使用的邮箱、密码
+- 保存手机号信息（以备后续验证）
+- 记录 VPN 节点信息
+
+## 相关阅读
+
+- [Claude 手机号验证完整指南](/docs/claude/guides/phone-verification)
+- [Claude Code 安装完整教程](/docs/claude/guides/install-code)
+- [Claude 订阅与支付完整指南](/docs/claude/guides/subscription-payment)
+- [Unsupported phone line type 详解](/docs/claude/errors/unsupported-phone)

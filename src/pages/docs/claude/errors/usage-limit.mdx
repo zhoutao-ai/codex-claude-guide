@@ -1,0 +1,126 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Usage limit reached — 订阅用量耗尽"
+description: "Claude Pro/Max 套餐的使用量达到上限，解决方案包括升级套餐、等待重置或使用 API"
+product: "Claude"
+category: "使用"
+severity: "低"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+使用 Claude 时收到提示：
+
+```
+You've reached your usage limit.
+```
+
+或：
+
+```
+Usage limit reached. Please try again later.
+```
+
+无法继续发送消息或使用 Claude Code。
+
+## 错误原因
+
+Claude 的订阅套餐有使用量限制：
+
+| 套餐 | 价格 | 消息限制 | 重置周期 |
+|---|---|---|---|
+| Free | $0 | 有限（不固定） | 每日 |
+| Pro | $20/月 | 约 45-100 条/5小时 | 每 5 小时 |
+| Max 5x | $100/月 | 约 225-500 条/5小时 | 每 5 小时 |
+| Max 20x | $200/月 | 约 900-2000 条/5小时 | 每 5 小时 |
+
+限制不是固定的——Anthropic 会根据当前服务器负载动态调整。高峰期限制更严格。
+
+## 解决方案
+
+### 方案一：等待用量重置
+
+Pro 套餐的用量每 5 小时重置一次。如果你在高峰期达到了限制：
+
+1. 等待 5 小时
+2. 在非高峰时段使用（北京时间凌晨/早上美国是深夜，服务器负载较低）
+3. 避免短时间内发送大量消息
+
+### 方案二：升级到 Max 套餐
+
+如果你经常达到限制，说明 Pro 套餐不够用：
+
+| 套餐 | 适合人群 | 用量倍数 |
+|---|---|---|
+| Pro ($20/月) | 轻度使用 | 1x |
+| Max 5x ($100/月) | 中度开发 | 5x |
+| Max 20x ($200/月) | 重度开发/团队 | 20x |
+
+升级路径：Settings → Billing → Manage Subscription → 选择 Max 套餐
+
+### 方案三：使用 Claude API
+
+如果你需要大量使用 Claude，API 方案更灵活：
+
+1. 在 [console.anthropic.com](https://console.anthropic.com) 充值
+2. 按 token 使用量计费，没有消息条数限制
+3. 使用支持 Claude API 的客户端
+
+API 费用参考（Claude Sonnet 4）：
+- 输入：$3 / 百万 tokens
+- 输出：$15 / 百万 tokens
+
+对于日常编程使用，API 月费通常在 $10-50 之间，可能比 Max 套餐更便宜。
+
+### 方案四：使用 Claude Code（如有订阅）
+
+Claude Code 的用量与 Claude.ai 的对话用量是分开计算的。如果你有 Pro/Max 订阅：
+
+- **Pro**：Claude Code 基础用量
+- **Max 5x**：Claude Code 5x 用量
+- **Max 20x**：Claude Code 20x 用量
+
+如果对话用量耗尽，但 Claude Code 用量还有剩余，可以继续在终端中使用 Claude Code。
+
+## 减少用量消耗的技巧
+
+### 1. 使用更短的提示
+
+长对话会消耗更多 token。尽量精简提示词，避免不必要的上下文。
+
+### 2. 使用合适的模型
+
+Claude.ai 默认使用最新、最强大的模型。如果任务不需要最强模型，可以在设置中切换到更经济的模型（如有选项）。
+
+### 3. 避免上传大文件
+
+上传大文件（PDF、图片）会快速消耗 token。只在必要时上传。
+
+### 4. 合并问题
+
+不要一个问题发一条消息。将多个相关问题合并到一条消息中发送。
+
+### 5. 使用 Projects 功能
+
+Claude Pro 支持创建 Projects，可以预设上下文，减少每次对话的 token 消耗。
+
+## 常见问题
+
+### Q: 用量限制是固定的吗？
+
+不是。Anthropic 会根据服务器负载动态调整。同一套餐在不同时间段的限制可能不同。
+
+### Q: 如何查看剩余用量？
+
+Claude.ai 界面底部会显示用量提示（如 "X messages remaining"）。Claude Code 中使用 `/usage` 命令查看。
+
+### Q: Max 20x 值得吗？
+
+如果你每天使用 Claude Code 超过 4 小时，Max 20x 通常值得。如果只是偶尔使用，Pro 即可。
+
+## 相关阅读
+
+- [Claude 订阅与支付完整指南](/docs/claude/guides/subscription-payment)
+- [Claude Code not in plan 详解](/docs/claude/errors/code-not-in-plan)
+- [Claude Code 安装完整教程](/docs/claude/guides/install-code)

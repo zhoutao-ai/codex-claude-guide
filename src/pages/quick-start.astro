@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="快速开始向导 - Codex & Claude 通关站">
+  <section class="bg-gradient-to-b from-brand-50 to-white border-b border-gray-100">
+    <div class="container-page py-16 text-center">
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">快速开始向导</h1>
+      <p class="text-gray-600 max-w-2xl mx-auto">回答几个问题，获取最适合你的 Codex / Claude 使用路径。</p>
+    </div>
+  </section>
+
+  <section class="container-page py-12">
+    <div class="max-w-2xl mx-auto space-y-8">
+      <div class="card">
+        <h3 class="font-semibold text-gray-900 mb-4">1. 你在中国大陆吗？</h3>
+        <div class="flex gap-3">
+          <button class="quiz-btn btn btn-outline" data-q="region" data-a="cn">是，中国大陆</button>
+          <button class="quiz-btn btn btn-outline" data-q="region" data-a="overseas">否，我在海外</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-semibold text-gray-900 mb-4">2. 你的技术水平？</h3>
+        <div class="flex flex-wrap gap-3">
+          <button class="quiz-btn btn btn-outline" data-q="level" data-a="beginner">新手，怕命令行</button>
+          <button class="quiz-btn btn btn-outline" data-q="level" data-a="dev">开发者，熟悉终端</button>
+          <button class="quiz-btn btn btn-outline" data-q="level" data-a="team">团队技术负责人</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-semibold text-gray-900 mb-4">3. 你主要想做什么？</h3>
+        <div class="flex flex-wrap gap-3">
+          <button class="quiz-btn btn btn-outline" data-q="goal" data-a="chat">日常对话/问答</button>
+          <button class="quiz-btn btn btn-outline" data-q="goal" data-a="code">写代码/编程</button>
+          <button class="quiz-btn btn btn-outline" data-q="goal" data-a="refactor">大型项目重构</button>
+          <button class="quiz-btn btn btn-outline" data-q="goal" data-a="api">API 集成/自动化</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-semibold text-gray-900 mb-4">4. 你对折腾账号/支付的接受度？</h3>
+        <div class="flex flex-wrap gap-3">
+          <button class="quiz-btn btn btn-outline" data-q="effort" data-a="easy">越省事越好，可用第三方</button>
+          <button class="quiz-btn btn btn-outline" data-q="effort" data-a="medium">愿意花时间注册官方账号</button>
+          <button class="quiz-btn btn btn-outline" data-q="effort" data-a="full">要完整官方体验</button>
+        </div>
+      </div>
+
+      <div id="recommendation" class="hidden card border-2 border-brand-400 bg-brand-50">
+        <h3 class="font-semibold text-brand-900 mb-3">🎯 推荐方案</h3>
+        <div id="recommendation-content" class="text-gray-700 space-y-3"></div>
+        <div class="mt-6 flex gap-2">
+          <a href="/codex" class="btn btn-primary text-sm">查看 Codex 教程</a>
+          <a href="/claude" class="btn btn-outline text-sm">查看 Claude 教程</a>
+          <button id="restart-quiz" class="btn btn-outline text-sm">重新选择</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  const answers = {};
+  const btns = document.querySelectorAll('.quiz-btn');
+  const recommendation = document.getElementById('recommendation');
+  const content = document.getElementById('recommendation-content');
+
+  btns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q;
+      const a = btn.dataset.a;
+      answers[q] = a;
+      document.querySelectorAll(`[data-q="${q}"]`).forEach((b) => {
+        b.classList.remove('btn-primary', 'bg-brand-600', 'text-white');
+        b.classList.add('btn-outline');
+      });
+      btn.classList.remove('btn-outline');
+      btn.classList.add('btn-primary', 'bg-brand-600', 'text-white');
+
+      if (Object.keys(answers).length === 4) {
+        showRecommendation();
+      }
+    });
+  });
+
+  function showRecommendation() {
+    const { region, level, goal, effort } = answers;
+    let rec = '';
+
+    if (effort === 'easy' && region === 'cn') {
+      rec = `<p class="font-medium text-lg">推荐：使用第三方 API 中转平台</p>
+        <p>邮箱注册即可使用，无需海外手机号和信用卡，支持微信/支付宝支付。可同时调用 Codex 和 Claude 模型。</p>
+        <p class="text-sm text-gray-500">适合不想折腾账号的用户，缺点是依赖第三方平台稳定性。</p>`;
+    } else if (goal === 'code' && level !== 'team') {
+      if (effort === 'full') {
+        rec = `<p class="font-medium text-lg">推荐：OpenAI Codex（已有 ChatGPT Plus/Pro）</p>
+          <p>无需额外订阅，直接在 ChatGPT 内使用 Codex，或安装 CLI / VS Code 扩展。响应快，适合日常编程。</p>
+          <p class="text-sm text-gray-500">需要解决 OpenAI 账号注册和手机号验证。</p>`;
+      } else {
+        rec = `<p class="font-medium text-lg">推荐：Claude Code（订阅 Claude Pro）</p>
+          <p>$20/月，200K 长上下文，Claude Code CLI 体验优秀，适合写代码和调试。</p>
+          <p class="text-sm text-gray-500">需要解决 Claude 注册和海外支付。</p>`;
+      }
+    } else if (goal === 'refactor') {
+      rec = `<p class="font-medium text-lg">推荐：Claude Code（订阅 Claude Max）</p>
+        <p>200K 超长上下文 + Extended Thinking，处理大型代码库重构能力最强。Max 5x ($100/月) 适合重度开发者。</p>
+        <p class="text-sm text-gray-500">需要海外手机号注册 + 海外信用卡或代充。</p>`;
+    } else if (goal === 'chat') {
+      rec = `<p class="font-medium text-lg">推荐：Claude.ai 网页版</p>
+        <p>免费额度即可体验 Claude 对话能力，适合日常问答。如需更高用量，订阅 Pro。</p>
+        <p class="text-sm text-gray-500">需要海外手机号完成注册验证。</p>`;
+    } else if (goal === 'api') {
+      rec = `<p class="font-medium text-lg">推荐：Codex CLI 或 Claude API</p>
+        <p>走 API Key 路径，适合 CI/CD 和自动化脚本。Codex CLI 适合交互式开发，Claude API 适合程序化调用。</p>
+        <p class="text-sm text-gray-500">需要 API 账号和付费，国内可考虑 API 中转方案。</p>`;
+    } else if (level === 'beginner') {
+      rec = `<p class="font-medium text-lg">推荐：Codex 桌面应用或 VS Code 扩展</p>
+        <p>图形界面，无需命令行，开箱即用。适合新手快速体验 AI 编程。</p>
+        <p class="text-sm text-gray-500">需要 OpenAI 账号，部分地区需切换 Microsoft Store 地区。</p>`;
+    } else {
+      rec = `<p class="font-medium text-lg">推荐：根据需求选择</p>
+        <p>追求速度选 Codex，追求深度选 Claude Code。两者都支持 API 调用，可并行试用。</p>`;
+    }
+
+    content.innerHTML = rec;
+    recommendation.classList.remove('hidden');
+    recommendation.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('restart-quiz').addEventListener('click', () => {
+    Object.keys(answers).forEach((k) => delete answers[k]);
+    btns.forEach((b) => {
+      b.classList.remove('btn-primary', 'bg-brand-600', 'text-white');
+      b.classList.add('btn-outline');
+    });
+    recommendation.classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

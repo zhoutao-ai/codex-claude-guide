@@ -1,0 +1,132 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Unsupported phone line type — VoIP/虚拟号被识别"
+description: "Claude 注册时提示 Unsupported phone line type，原因是使用了 VoIP 或虚拟号码，解决方案是更换为实体 SIM 卡"
+product: "Claude"
+category: "验证"
+severity: "高"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 Claude.ai 注册过程中，输入手机号接收验证码时，收到错误提示：
+
+```
+Unsupported phone line type
+```
+
+或：
+
+```
+The phone number you provided is not supported.
+```
+
+无法继续注册流程。
+
+## 错误原因
+
+Anthropic（Claude 的母公司）使用号码类型检测系统，拒绝以下类型的号码：
+
+| 号码类型 | 是否被拒 | 示例 |
+|---|---|---|
+| VoIP（虚拟号码） | ✗ 被拒 | Google Voice、TextNow、Skype Number |
+| 虚拟运营商（部分） | ✗ 可能被拒 | 某些 MVNO 号码 |
+| 一次性接码 | ✗ 被拒 | 免费接码网站的号码 |
+| 中国大陆 +86 | ✗ 不支持 | 所有 +86 号码 |
+| 海外实体 SIM | ✓ 可用 | Ultra Mobile、Lycamobile |
+| 长期独占云号码 | ✓ 通常可用 | DuoPlus 等独占号码 |
+
+Anthropic 对号码类型的检测比 OpenAI 更严格，许多在其他平台能通过 VoIP 号码在 Claude 上会被拒绝。
+
+## 解决方案
+
+### 方案一：使用海外实体 SIM 卡（最可靠）
+
+这是唯一能 100% 通过 Claude 号码检测的方案。
+
+**推荐卡种：**
+
+| 卡种 | 国家 | 购买渠道 | 特点 |
+|---|---|---|---|
+| Ultra Mobile PayGo | 美国 | 淘宝/官网 | $3/月，可漫游收短信 |
+| Lycamobile | 多国 | 淘宝/官网 | 多国号码可选 |
+| giffgaff | 英国 | 淘宝/官网 | 免月费可保号 |
+| Knowroaming | 美国 | 官网 | 全球漫游 |
+
+**操作步骤：**
+
+1. 购买并激活海外 SIM 卡
+2. 确保能在中国收到国际短信
+3. 在 Claude 注册页面输入该号码
+4. 接收验证码并完成验证
+
+### 方案二：使用长期独占云号码
+
+如果无法购买实体卡，可以使用长期独占的云号码：
+
+1. 在 DuoPlus、SMS-Activate 等平台购买**长期独占**号码
+2. 选择美国或英国号码
+3. 确保号码是独占的（不是共享的）
+4. 在 Claude 注册页面输入
+
+<div class="alert alert-warning">
+<strong>注意：</strong>部分云号码也可能被识别为非实体线路。如果被拒绝，需要更换为实体卡方案。
+</div>
+
+### 方案三：使用 Google/Apple 账号注册
+
+Claude 支持使用 Google 账号或 Apple ID 直接注册，有时可以跳过手机号验证：
+
+1. 在 claude.ai 注册页面选择 "Continue with Google" 或 "Continue with Apple"
+2. 使用已登录的 Google/Apple 账号授权
+3. 部分用户反馈这种方式有时不需要手机号验证
+
+<div class="alert alert-info">
+<strong>提示：</strong>此方法并非 100% 有效，Anthropic 可能仍会要求验证。但值得一试，成本最低。
+</div>
+
+## 如何判断你的号码类型
+
+如果你不确定自己的号码是否为 VoIP：
+
+1. **查看号码来源**：如果是实体 SIM 卡插入手机，通常是实体线路
+2. **查询号码运营商**：使用 [freecarrierlookup.com](https://www.freecarrierlookup.com) 等工具查询
+3. **Google Voice 检测**：所有 Google Voice 号码都是 VoIP
+4. **虚拟号检测**：如果号码是通过 App 获取（非实体卡），很可能是 VoIP
+
+## 被拒绝后的处理
+
+### 第一步：停止重试
+
+不要使用同一号码反复尝试，这会导致更严重的封锁（见 [phone_number_temp_blocked](/docs/claude/errors/temp-blocked)）。
+
+### 第二步：等待 1 小时
+
+让系统清除你的尝试记录。
+
+### 第三步：更换号码
+
+使用全新的、实体线路的号码重新注册。
+
+### 第四步：确保环境干净
+
+- 使用无痕模式
+- 清除 Cookie
+- 确保 IP 与号码国家一致
+
+## 常见问题
+
+### Q: 我用的是实体 SIM 卡但还是被拒？
+
+可能是虚拟运营商（MVNO）的号码。部分 MVNO 号码虽然使用实体 SIM，但后端线路类型被标记为非传统线路。更换为传统运营商（如 AT&T、Verizon、Vodafone）的 SIM 卡。
+
+### Q: Claude 比OpenAI 的验证更严格吗？
+
+是的。Anthropic 对号码类型的检测比 OpenAI 更严格，在 OpenAI 上能通过的 VoIP 号码在 Claude 上大概率会被拒。
+
+## 相关阅读
+
+- [Claude 注册完整流程](/docs/claude/guides/registration)
+- [Claude 手机号验证完整指南](/docs/claude/guides/phone-verification)
+- [VoIP numbers are not accepted 错误详解](/docs/claude/errors/voip-rejected)

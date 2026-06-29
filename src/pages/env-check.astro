@@ -1,0 +1,163 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="环境检测工具 - Codex & Claude 通关站">
+  <section class="bg-gradient-to-b from-brand-50 to-white border-b border-gray-100">
+    <div class="container-page py-16 text-center">
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">环境检测工具</h1>
+      <p class="text-gray-600 max-w-2xl mx-auto">检测你的网络环境、时区、浏览器信息，判断是否适合注册和使用 Codex / Claude。</p>
+    </div>
+  </section>
+
+  <section class="container-page py-12">
+    <div class="max-w-3xl mx-auto">
+      <div class="card mb-6 text-center">
+        <button id="check-btn" class="btn btn-primary">开始检测</button>
+      </div>
+
+      <div id="results" class="space-y-4 hidden">
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium text-gray-900">IP 地址与地区</h3>
+            <span id="ip-status" class="tag tag-gray">待检测</span>
+          </div>
+          <div id="ip-content" class="text-sm text-gray-600"></div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium text-gray-900">时区</h3>
+            <span id="tz-status" class="tag tag-gray">待检测</span>
+          </div>
+          <div id="tz-content" class="text-sm text-gray-600"></div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium text-gray-900">浏览器与语言</h3>
+            <span id="lang-status" class="tag tag-gray">待检测</span>
+          </div>
+          <div id="lang-content" class="text-sm text-gray-600"></div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium text-gray-900">综合评估</h3>
+            <span id="overall-status" class="tag tag-gray">待评估</span>
+          </div>
+          <div id="overall-content" class="text-sm text-gray-600 space-y-2"></div>
+        </div>
+      </div>
+
+      <div class="card bg-amber-50 border-amber-200 mt-6">
+        <h3 class="font-semibold text-amber-900 mb-2">检测说明</h3>
+        <ul class="text-sm text-amber-800 space-y-1 ml-4 list-disc">
+          <li>IP 检测通过公共 API 获取，仅显示地区信息，不记录任何数据。</li>
+          <li>注册 Claude/Codex 时，建议 IP 地区、手机号国家、时区保持一致。</li>
+          <li>浏览器语言为中文时，部分服务可能触发风控，建议使用英文环境。</li>
+          <li>此工具仅做参考，不保证 100% 准确。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  document.getElementById('check-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('check-btn');
+    btn.textContent = '检测中...';
+    btn.disabled = true;
+    document.getElementById('results').classList.remove('hidden');
+
+    const supportedRegions = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Singapore'];
+
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      const data = await res.json();
+      const ipStatus = document.getElementById('ip-status');
+      const ipContent = document.getElementById('ip-content');
+      ipContent.innerHTML = `
+        <div class="grid grid-cols-2 gap-2">
+          <div><span class="text-gray-400">IP：</span>${data.ip}</div>
+          <div><span class="text-gray-400">国家：</span>${data.country_name}</div>
+          <div><span class="text-gray-400">地区：</span>${data.region}</div>
+          <div><span class="text-gray-400">城市：</span>${data.city}</div>
+          <div><span class="text-gray-400">运营商：</span>${data.org}</div>
+        </div>
+      `;
+      if (supportedRegions.some((r) => data.country_name.includes(r))) {
+        ipStatus.textContent = '适合注册';
+        ipStatus.className = 'tag tag-green';
+      } else if (data.country_name === 'China' || data.country_name === 'Hong Kong' || data.country_name === '中国') {
+        ipStatus.textContent = '不适合直接注册';
+        ipStatus.className = 'tag tag-red';
+      } else {
+        ipStatus.textContent = '需进一步确认';
+        ipStatus.className = 'tag tag-orange';
+      }
+    } catch (err) {
+      document.getElementById('ip-content').textContent = '检测失败，可能是网络问题或 API 不可用。';
+      document.getElementById('ip-status').textContent = '检测失败';
+      document.getElementById('ip-status').className = 'tag tag-red';
+    }
+
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const tzStatus = document.getElementById('tz-status');
+    const tzContent = document.getElementById('tz-content');
+    tzContent.innerHTML = `<div>当前时区：${tz}</div>`;
+    if (tz.includes('America') || tz.includes('Europe') || tz.includes('Asia/Tokyo') || tz.includes('Asia/Singapore')) {
+      tzStatus.textContent = '时区合适';
+      tzStatus.className = 'tag tag-green';
+    } else if (tz.includes('Asia/Shanghai') || tz.includes('Asia/Hong_Kong')) {
+      tzStatus.textContent = '时区可能触发风控';
+      tzStatus.className = 'tag tag-orange';
+    } else {
+      tzStatus.textContent = '时区一般';
+      tzStatus.className = 'tag tag-gray';
+    }
+
+    const lang = navigator.language;
+    const langs = navigator.languages.join(', ');
+    const langStatus = document.getElementById('lang-status');
+    const langContent = document.getElementById('lang-content');
+    langContent.innerHTML = `
+      <div><span class="text-gray-400">首选语言：</span>${lang}</div>
+      <div><span class="text-gray-400">所有语言：</span>${langs}</div>
+      <div><span class="text-gray-400">浏览器：</span>${navigator.userAgent.split(' ').slice(-2).join(' ')}</div>
+    `;
+    if (lang.startsWith('en')) {
+      langStatus.textContent = '语言合适';
+      langStatus.className = 'tag tag-green';
+    } else if (lang.startsWith('zh')) {
+      langStatus.textContent = '建议切换为英文';
+      langStatus.className = 'tag tag-orange';
+    } else {
+      langStatus.textContent = '语言一般';
+      langStatus.className = 'tag tag-gray';
+    }
+
+    const ipOk = document.getElementById('ip-status').textContent === '适合注册';
+    const tzOk = document.getElementById('tz-status').textContent === '时区合适';
+    const langOk = document.getElementById('lang-status').textContent === '语言合适';
+    const overallStatus = document.getElementById('overall-status');
+    const overallContent = document.getElementById('overall-content');
+
+    if (ipOk && tzOk && langOk) {
+      overallStatus.textContent = '环境良好';
+      overallStatus.className = 'tag tag-green';
+      overallContent.innerHTML = '<p>✓ 你的网络环境适合注册和使用 Codex / Claude。可以开始注册流程。</p>';
+    } else if (ipOk) {
+      overallStatus.textContent = '基本可用';
+      overallStatus.className = 'tag tag-orange';
+      overallContent.innerHTML = '<p>⚠️ IP 地区合适，但时区或语言可能需要调整。建议将系统时区设为 IP 对应地区，浏览器语言设为英文。</p>';
+    } else {
+      overallStatus.textContent = '环境需要调整';
+      overallStatus.className = 'tag tag-red';
+      overallContent.innerHTML = '<p>✗ 当前 IP 地区不适合直接注册。请先解决网络环境问题，确保 IP 位于支持的地区，且与手机号国家、时区保持一致。</p>';
+    }
+
+    btn.textContent = '重新检测';
+    btn.disabled = false;
+  });
+</script>

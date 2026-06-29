@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const errors = [
+  { product: 'Codex', code: "npm install -g codex", desc: '装错包了。正确包名是 @openai/codex', severity: '低', solution: '卸载后改用 npm install -g @openai/codex', category: '安装', href: '/docs/codex/errors/npm-wrong-package' },
+  { product: 'Codex', code: 'PropertyNotFoundException', desc: 'Windows 安装脚本的已知问题', severity: '中', solution: '使用 powershell -ExecutionPolicy ByPass -c 包装命令', category: '安装', href: '/docs/codex/errors/property-not-found' },
+  { product: 'Codex', code: "'codex' is not recognized", desc: 'PATH 未正确配置', severity: '低', solution: '重启终端，或手动将 npm 全局 bin 目录加入 PATH', category: '安装', href: '/docs/codex/errors/codex-not-recognized' },
+  { product: 'Codex', code: 'Microsoft Store 不可用', desc: '桌面应用在部分地区商店不可见', severity: '中', solution: '将 Microsoft Store 地区切换为美国后重试', category: '安装', href: '/docs/codex/errors/store-unavailable' },
+  { product: 'Codex', code: 'Verify your phone number', desc: '创建首个 API Key 时触发手机号验证', severity: '高', solution: '使用海外实体卡或长期独占云号码接码', category: '验证', href: '/docs/codex/errors/verify-phone-number' },
+  { product: 'Codex', code: 'Number already used or limit reached', desc: '号码绑定账号达上限', severity: '高', solution: '更换新的长期独占号码', category: '验证', href: '/docs/codex/errors/number-already-used' },
+  { product: 'Codex', code: 'API 连接超时', desc: '网络环境不稳定或代理配置问题', severity: '中', solution: '检查代理设置，配置 HTTPS_PROXY 环境变量', category: '网络', href: '/docs/codex/errors/api-timeout' },
+  { product: 'Codex', code: '3221225781', desc: 'Windows 上 Codex 崩溃退出码', severity: '高', solution: '更新到最新版本，检查系统兼容性', category: '运行', href: '/docs/codex/errors/crash-3221225781' },
+  { product: 'Claude', code: 'Unsupported phone line type', desc: 'VoIP / 虚拟号 / 座机被识别', severity: '高', solution: '换实体 SIM 卡或真实移动线路', category: '验证', href: '/docs/claude/errors/unsupported-phone' },
+  { product: 'Claude', code: 'phone_number_temp_blocked', desc: '试错过多，号码临时锁定', severity: '中', solution: '等 24 小时，换号码或环境', category: '验证', href: '/docs/claude/errors/temp-blocked' },
+  { product: 'Claude', code: 'Number already used too many times', desc: '号码绑定账号达上限', severity: '高', solution: '更换长期独占号码', category: '验证', href: '/docs/claude/errors/number-used' },
+  { product: 'Claude', code: 'VoIP numbers are not accepted', desc: '虚拟号被拒', severity: '高', solution: '停用 Google Voice / TextNow', category: '验证', href: '/docs/claude/errors/voip-rejected' },
+  { product: 'Claude', code: '验证码已发送但收不到', desc: '区号不在官方服务区', severity: '高', solution: '确认号码归属地为支持地区（非 +86）', category: '验证', href: '/docs/claude/errors/no-code-received' },
+  { product: 'Claude', code: 'Payment failed / 卡被拒', desc: '国内双币卡风控', severity: '中', solution: '使用海外信用卡或第三方代充', category: '支付', href: '/docs/claude/errors/payment-failed' },
+  { product: 'Claude', code: 'Usage limit reached', desc: '订阅用量耗尽', severity: '低', solution: '升级到 Max 套餐或等待重置', category: '使用', href: '/docs/claude/errors/usage-limit' },
+  { product: 'Claude', code: 'Claude Code not in plan', desc: '免费计划不含 Claude Code', severity: '中', solution: '订阅 Pro / Max / Team 计划', category: '订阅', href: '/docs/claude/errors/code-not-in-plan' },
+];
+---
+
+<BaseLayout title="错误码库 - Codex & Claude 通关站">
+  <section class="bg-gray-900 text-white">
+    <div class="container-page py-16">
+      <h1 class="text-3xl font-bold mb-3">错误码库</h1>
+      <p class="text-gray-400 max-w-2xl">收录 Codex 与 Claude 常见错误提示、原因分析与解决方案。支持按产品、类别和关键词筛选。</p>
+      <div class="mt-6 max-w-xl flex gap-2">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="搜索错误码或关键词，如 phone number"
+          class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+        />
+        <button class="btn btn-primary">搜索</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-8">
+    <div class="flex flex-wrap gap-2 mb-8">
+      <button class="filter-btn tag tag-blue" data-filter="all">全部</button>
+      <button class="filter-btn tag tag-gray" data-filter="Codex">Codex</button>
+      <button class="filter-btn tag tag-gray" data-filter="Claude">Claude</button>
+      <span class="mx-2 text-gray-300">|</span>
+      <button class="filter-btn tag tag-gray" data-filter="安装">安装</button>
+      <button class="filter-btn tag tag-gray" data-filter="验证">验证</button>
+      <button class="filter-btn tag tag-gray" data-filter="支付">支付</button>
+      <button class="filter-btn tag tag-gray" data-filter="网络">网络</button>
+      <button class="filter-btn tag tag-gray" data-filter="订阅">订阅</button>
+      <button class="filter-btn tag tag-gray" data-filter="使用">使用</button>
+      <button class="filter-btn tag tag-gray" data-filter="运行">运行</button>
+    </div>
+
+    <div id="error-list" class="space-y-3">
+      {errors.map((e) => (
+        <a href={e.href} class="error-item card block hover:border-brand-300" data-product={e.product} data-category={e.category} data-text={(e.code + e.desc + e.solution).toLowerCase()}>
+          <div class="flex flex-col lg:flex-row lg:items-center gap-3 mb-3">
+            <span class={`tag ${e.product === 'Codex' ? 'tag-blue' : 'tag-orange'}`}>{e.product}</span>
+            <span class="tag tag-gray">{e.category}</span>
+            <code class="font-mono text-sm bg-gray-100 px-3 py-1.5 rounded text-gray-800 flex-1">{e.code}</code>
+            <span class={`tag ${e.severity === '高' ? 'tag-red' : e.severity === '中' ? 'tag-orange' : 'tag-green'}`}>{e.severity}风险</span>
+          </div>
+          <p class="text-sm text-gray-600 mb-2">{e.desc}</p>
+          <div class="text-sm pt-2 border-t border-gray-100 flex items-center justify-between">
+            <span><span class="text-gray-400">解决方案：</span><span class="text-gray-700">{e.solution}</span></span>
+            <span class="text-brand-600 text-xs font-medium">查看详情 →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div id="no-result" class="hidden text-center py-12 text-gray-400">
+      <p class="text-lg mb-2">未找到匹配的错误码</p>
+      <p class="text-sm">试试使用<a href="/diagnose" class="text-brand-600 hover:underline">问题诊断器</a>获取帮助</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  const searchInput = document.getElementById('search-input');
+  const errorItems = document.querySelectorAll('.error-item');
+  const noResult = document.getElementById('no-result');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  let currentFilter = 'all';
+
+  function applyFilter() {
+    const keyword = searchInput.value.toLowerCase();
+    let visibleCount = 0;
+    errorItems.forEach((item) => {
+      const product = item.dataset.product;
+      const category = item.dataset.category;
+      const text = item.dataset.text;
+      const matchFilter = currentFilter === 'all' || product === currentFilter || category === currentFilter;
+      const matchKeyword = !keyword || text.includes(keyword);
+      if (matchFilter && matchKeyword) {
+        item.style.display = '';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+    noResult.classList.toggle('hidden', visibleCount > 0);
+  }
+
+  searchInput.addEventListener('input', applyFilter);
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => {
+        b.classList.remove('tag-blue');
+        b.classList.add('tag-gray');
+      });
+      btn.classList.remove('tag-gray');
+      btn.classList.add('tag-blue');
+      currentFilter = btn.dataset.filter;
+      applyFilter();
+    });
+  });
+</script>

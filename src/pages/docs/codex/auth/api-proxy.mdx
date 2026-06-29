@@ -1,0 +1,196 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "API 中转方案完整指南"
+description: "配置 Codex CLI 使用第三方 API 中转服务，解决直连 OpenAI API 超时或不稳定的问题"
+product: "Codex"
+category: "认证"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+由于网络环境限制，中国大陆用户直连 OpenAI API（`api.openai.com`）经常遇到超时、不稳定等问题。API 中转方案通过将请求转发到国内可直连的中转服务器，解决这一痛点。
+
+## 中转方案原理
+
+```
+Codex CLI → 中转服务器（国内可直连）→ OpenAI API
+```
+
+中转服务器作为代理，接收 Codex CLI 的请求，转发给 OpenAI API，再将结果返回。对 Codex CLI 来说，它只是在与一个兼容 OpenAI API 格式的服务器通信。
+
+## 配置方法
+
+### 第一步：获取中转服务信息
+
+从中转服务商获取：
+- **Base URL**：中转 API 地址（如 `https://api.proxy.com/v1`）
+- **API Key**：中转服务的密钥（格式可能是 `sk-xxxx` 或自定义格式）
+
+### 第二步：配置 config.toml
+
+编辑 `~/.codex/config.toml`：
+
+```toml
+# 指定使用中转 provider
+model = "o4-mini"
+model_provider = "proxy"
+
+# 定义中转 provider
+[model_providers.proxy]
+name = "API Proxy"
+base_url = "https://api.proxy.com/v1"
+env_key = "PROXY_API_KEY"
+wire_api = "chat"
+```
+
+### 第三步：设置环境变量
+
+**macOS / Linux：**
+
+```bash
+export PROXY_API_KEY="sk-proxy-xxxxxxxxxxxx"
+
+# 永久设置
+echo 'export PROXY_API_KEY="sk-proxy-xxxxxxxxxxxx"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Windows PowerShell：**
+
+```powershell
+$env:PROXY_API_KEY = "sk-proxy-xxxxxxxxxxxx"
+
+# 永久设置
+[System.Environment]::SetEnvironmentVariable("PROXY_API_KEY", "sk-proxy-xxxxxxxxxxxx", "User")
+```
+
+### 第四步：验证
+
+```bash
+codex --version
+codex "hello, are you working?"
+```
+
+如果 Codex 正常响应，说明中转配置成功。
+
+## 同时配置多个 Provider
+
+你可以在 config.toml 中定义多个 provider，按需切换：
+
+```toml
+# 默认使用直连
+model = "o4-mini"
+model_provider = "openai"
+
+# 直连 OpenAI
+[model_providers.openai]
+name = "OpenAI Direct"
+base_url = "https://api.openai.com/v1"
+env_key = "OPENAI_API_KEY"
+wire_api = "chat"
+
+# 中转服务 A
+[model_providers.proxy-a]
+name = "Proxy A"
+base_url = "https://api.proxy-a.com/v1"
+env_key = "PROXY_A_KEY"
+wire_api = "chat"
+
+# 中转服务 B
+[model_providers.proxy-b]
+name = "Proxy B"
+base_url = "https://api.proxy-b.com/v1"
+env_key = "PROXY_B_KEY"
+wire_api = "chat"
+```
+
+通过命令行参数临时切换：
+
+```bash
+# 使用中转 A
+codex --model-provider proxy-a "task"
+
+# 使用中转 B
+codex --model-provider proxy-b "task"
+```
+
+## 选择中转服务的注意事项
+
+<div class="alert alert-warning">
+<strong>安全提醒：</strong>使用中转服务意味着你的 API Key、代码内容和对话数据都会经过第三方服务器。请仔细评估风险。
+</div>
+
+### 评估维度
+
+| 维度 | 说明 |
+|---|---|
+| 数据安全 | 是否记录/存储请求内容？ |
+| 可靠性 | 服务可用性、响应速度 |
+| 价格 | 中转费用通常比直连贵 10-30% |
+| 模型支持 | 是否支持你需要的所有模型？ |
+| 速率限制 | 是否有额外的请求频率限制？ |
+
+### 常见中转类型
+
+1. **API 代理转发**：仅转发请求，不缓存数据（相对安全）
+2. **API 聚合平台**：聚合多个 AI 服务，可能有额外功能
+3. **自建中转**：在海外 VPS 上自建代理（最安全，但需要技术能力）
+
+## 自建中转方案（进阶）
+
+如果你有海外 VPS，可以自建 API 中转：
+
+### 使用 nginx 反向代理
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name api.yourdomain.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    location /v1/ {
+        proxy_pass https://api.openai.com/v1/;
+        proxy_set_header Host api.openai.com;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_ssl_server_name on;
+    }
+}
+```
+
+配置 Codex 使用自建中转：
+
+```toml
+[model_providers.self]
+name = "Self Hosted"
+base_url = "https://api.yourdomain.com/v1"
+env_key = "OPENAI_API_KEY"
+wire_api = "chat"
+```
+
+自建方案的优点：
+- 数据不经过第三方
+- 可以使用原始 OpenAI API Key
+- 完全可控
+
+## 常见问题
+
+### Q: 中转服务支持哪些模型？
+
+取决于中转服务商。大多数支持 GPT-4o、o3、o4-mini 等主流模型，但 Codex 专用模型可能不支持。购买前确认。
+
+### Q: 中转服务会泄露我的代码吗？
+
+有这个风险。建议：1) 选择有隐私政策保证的服务商；2) 敏感项目使用自建中转；3) 不要在中转服务中使用包含密钥的代码。
+
+### Q: 中转服务延迟高怎么办？
+
+选择与你网络距离近的中转节点。如果中转服务器在美国，但你在国内，延迟可能比直连还高。
+
+## 相关阅读
+
+- [config.toml 配置](/docs/codex/auth/config-toml)
+- [auth.json 配置](/docs/codex/auth/auth-json)
+- [API 连接超时解决方案](/docs/codex/errors/api-timeout)

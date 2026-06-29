@@ -1,0 +1,212 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Claude 订阅与支付完整指南"
+description: "Claude Pro/Max 套餐订阅流程、国内支付方式对比、虚拟卡使用、第三方代充风险与防封技巧"
+product: "Claude"
+category: "支付"
+lastUpdated: "2026-06-29"
+---
+
+## 概述
+
+Claude 提供免费和付费套餐。免费版功能有限且不含 Claude Code。要使用完整功能和 Claude Code，需要订阅 Pro 或 Max 套餐。本指南介绍订阅流程与国内支付方案。
+
+## 套餐对比
+
+### 免费版 vs 付费版
+
+| 功能 | Free | Pro | Max 5x | Max 20x |
+|---|---|---|---|---|
+| Claude.ai 对话 | 有限 | 充足 | 5x | 20x |
+| Claude Code | ✗ | 基础 | 5x | 20x |
+| 优先访问新模型 | ✗ | ✓ | ✓ | ✓ |
+| 200K 上下文 | ✗ | ✓ | ✓ | ✓ |
+| 价格 | $0 | $20/月 | $100/月 | $200/月 |
+
+### 如何选择
+
+| 使用场景 | 推荐套餐 | 月费 |
+|---|---|---|
+| 偶尔对话 | Free | $0 |
+| 日常对话 + 轻度编程 | Pro | $20 |
+| 中度使用 Claude Code | Max 5x | $100 |
+| 全职开发 + 重度使用 | Max 20x | $200 |
+| 团队协作 | Team | $30/人 |
+
+## 订阅流程
+
+### 第一步：登录 Claude 账号
+
+1. 访问 [claude.ai](https://claude.ai)
+2. 使用已注册的账号登录
+
+### 第二步：进入订阅页面
+
+1. 点击左下角头像 → **Settings**
+2. 选择 **Billing** 或 **Manage Subscription**
+3. 点击 **Upgrade to Pro** 或 **Upgrade to Max**
+
+### 第三步：选择套餐
+
+选择你需要的套餐（Pro / Max 5x / Max 20x）
+
+### 第四步：输入支付信息
+
+1. 输入信用卡信息：
+   - 卡号
+   - 有效期
+   - CVV
+   - 账单地址
+2. 确认订阅
+
+### 第五步：完成订阅
+
+支付成功后，你的账号立即升级为付费版本。
+
+## 国内支付方式
+
+### 方式一：海外信用卡（最稳定）
+
+如果你有海外银行发行的 Visa/Master 信用卡：
+
+- 成功率：高（90%+）
+- 风险：低
+- 要求：卡的账单地址与 VPN IP 国家一致
+
+### 方式二：第三方代充（最常用）
+
+国内用户最常用的方案，支持人民币支付：
+
+| 平台类型 | 支付方式 | 价格 | 风险 |
+|---|---|---|---|
+| 专业代充网站 | 支付宝/微信 | ¥150-1600/月 | 中 |
+| 淘宝代充 | 支付宝 | ¥150-1600/月 | 中高 |
+| 社群代充 | 微信/支付宝 | ¥150-1600/月 | 低-中 |
+
+<div class="alert alert-danger">
+<strong>代充风险提示：</strong>
+<ul>
+<li><strong>盗刷卡风险：</strong>部分代充使用盗刷信用卡，可能导致你的 Claude 账号被封</li>
+<li><strong>退款封号：</strong>代充后如果对方发起信用卡退款，Anthropic 会立即封号</li>
+<li><strong>价格陷阱：</strong>价格明显低于官方（$20≈¥145）的要警惕</li>
+<li><strong>选择标准：</strong>选有口碑、有售后保障、经营时间长的平台</li>
+</ul>
+</div>
+
+### 方式三：虚拟信用卡
+
+| 服务 | 类型 | 成功率 | 说明 |
+|---|---|---|---|
+| Depay | 虚拟 Visa | 中 | 支持 USDT 充值 |
+| OneKey Card | 虚拟 Visa | 中高 | 加密货币充值 |
+| Privacy.com | 虚拟卡 | 低 | 仅美国居民 |
+| Revolut | 虚拟卡 | 中 | 需欧洲/英国身份 |
+
+### 方式四：Claude API（无需订阅）
+
+如果只需要 Claude 的能力，可以跳过订阅，使用 API 按量计费：
+
+1. 在 [console.anthropic.com](https://console.anthropic.com) 注册
+2. 充值 API 额度
+3. 使用支持 Claude API 的客户端
+
+API 费用参考（Claude Sonnet 4）：
+- 输入：$3 / 百万 tokens
+- 输出：$15 / 百万 tokens
+
+## 支付失败处理
+
+### 常见失败原因
+
+| 原因 | 处理方法 |
+|---|---|
+| 国内双币卡被拒 | 使用海外卡或代充 |
+| IP 与卡地址不匹配 | 确保 VPN IP 与卡账单地址一致 |
+| 3D Secure 验证失败 | 联系发卡行开通 3D Secure |
+| 余额不足 | 确保卡内有足够余额 |
+| 虚拟卡被拒 | 尝试其他虚拟卡或换方案 |
+
+详见 [Payment failed 详解](/docs/claude/errors/payment-failed)
+
+## 各支付方式对比
+
+| 方式 | 难度 | 成功率 | 月费 | 风险 | 推荐度 |
+|---|---|---|---|---|---|
+| 海外信用卡 | 高 | 高 | $20-200 | 低 | ★★★★★ |
+| 专业代充 | 低 | 高 | ¥150-1600 | 中 | ★★★★ |
+| 虚拟信用卡 | 中 | 中 | $20-200+手续费 | 中 | ★★★ |
+| Claude API | 中 | 高 | 按 token | 低 | ★★★★ |
+
+## 防封号指南
+
+<div class="alert alert-warning">
+<strong>封号高风险行为：</strong>
+<ul>
+<li>频繁切换 IP 地区（如一会儿美国、一会儿日本）</li>
+<li>多人共用同一 Claude 账号</li>
+<li>使用盗刷卡支付后发起退款</li>
+<li>使用异常支付渠道</li>
+<li>将 API Key 发到公开论坛</li>
+<li>短时间大量 API 请求</li>
+<li>账号分享/出租给他人</li>
+</ul>
+</div>
+
+### 保号建议
+
+1. **固定 IP**：固定使用一个 VPN 节点或同一国家/地区的节点
+2. **不共享**：不要多人共用同一账号
+3. **不退款**：不要发起信用卡退款
+4. **稳定订阅**：不要反复订阅-取消-再订阅
+5. **设置限额**：在 Console 中设置 API 使用限额，防止意外超额
+6. **定期登录**：定期登录 claude.ai 保持账号活跃
+
+## 取消订阅
+
+### 方法
+
+1. 登录 claude.ai
+2. Settings → Billing → Manage Subscription
+3. 点击 "Cancel subscription"
+4. 确认取消
+
+### 注意事项
+
+- 取消后当前计费周期内仍可使用
+- 下个计费周期不再扣费
+- 账号降级为免费版
+- 历史对话数据保留
+
+<div class="alert alert-info">
+<strong>建议：</strong>如果只是暂时不需要，建议降级为免费版而不是完全取消。这样可以保留订阅状态历史，重新订阅时更容易。
+</div>
+
+## 常见问题
+
+### Q: 订阅后可以退款吗？
+
+Anthropic 不提供订阅退款。一旦扣款，费用不可退还。
+
+### Q: 可以按年订阅吗？
+
+目前 Claude 仅支持月度订阅，没有年度订阅选项。
+
+### Q: Pro 和 Max 可以随时切换吗？
+
+可以。升级立即生效，降级在下一个计费周期生效。
+
+### Q: 代充的账号安全吗？
+
+取决于代充渠道。使用盗刷卡的代充随时可能被封。建议选择有保障的正规渠道。
+
+### Q: Claude API 和订阅哪个更划算？
+
+如果你每天使用超过 3 小时，订阅 Max 更划算。偶尔使用，API 按量计费更经济。
+
+## 相关阅读
+
+- [Claude 注册完整流程](/docs/claude/guides/registration)
+- [Claude Code 安装完整教程](/docs/claude/guides/install-code)
+- [Payment failed 详解](/docs/claude/errors/payment-failed)
+- [Usage limit reached 详解](/docs/claude/errors/usage-limit)
+- [Claude Code not in plan 详解](/docs/claude/errors/code-not-in-plan)

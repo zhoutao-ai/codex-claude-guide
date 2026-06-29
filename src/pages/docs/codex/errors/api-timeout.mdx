@@ -1,0 +1,136 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "API 连接超时 — 网络与代理配置问题"
+description: "Codex CLI 连接 OpenAI API 时超时，通常是网络环境不稳定或代理配置不正确"
+product: "Codex"
+category: "网络"
+severity: "中"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+使用 Codex CLI 时出现以下错误之一：
+
+```
+Error: API request timed out
+```
+
+```
+Error: connect ETIMEDOUT
+```
+
+```
+Error: fetch failed
+```
+
+命令长时间无响应后报错退出。
+
+## 错误原因
+
+1. **网络无法直连 OpenAI API**：中国大陆网络环境下无法直接访问 `api.openai.com`
+2. **代理未正确配置**：虽然开了代理，但 Codex CLI 未读取到代理设置
+3. **代理不稳定**：VPN/代理节点延迟过高或频繁断线
+4. **DNS 污染**：`api.openai.com` 的 DNS 解析被干扰
+
+## 解决方案
+
+### 方案一：配置 HTTPS_PROXY 环境变量（推荐）
+
+Codex CLI 会读取标准的代理环境变量。在终端中设置：
+
+**macOS / Linux：**
+
+```bash
+export HTTPS_PROXY=http://127.0.0.1:7890
+export HTTP_PROXY=http://127.0.0.1:7890
+```
+
+将 `7890` 替换为你的代理端口号。可以将这两行加入 `~/.zshrc` 或 `~/.bashrc` 使其永久生效。
+
+**Windows PowerShell：**
+
+```powershell
+$env:HTTPS_PROXY = "http://127.0.0.1:7890"
+$env:HTTP_PROXY = "http://127.0.0.1:7890"
+```
+
+或通过系统设置永久配置：
+
+1. 设置 → 系统 → 关于 → 高级系统设置 → 环境变量
+2. 新建用户变量 `HTTPS_PROXY`，值为 `http://127.0.0.1:7890`
+3. 新建用户变量 `HTTP_PROXY`，值为 `http://127.0.0.1:7890`
+4. 重启终端
+
+### 方案二：使用 API 中转服务
+
+如果你不想配置代理，可以使用第三方 API 中转服务，将 API 请求转发到国内可直连的服务器：
+
+1. 在中转服务平台注册并获取中转 API Key
+2. 配置 Codex 的 `config.toml`，设置 `base_url` 为中转地址：
+
+```toml
+[model_providers.custom]
+name = "Custom API"
+base_url = "https://your-proxy-domain.com/v1"
+env_key = "CUSTOM_API_KEY"
+```
+
+3. 设置环境变量：
+
+```bash
+export CUSTOM_API_KEY="your-proxy-api-key"
+```
+
+<div class="alert alert-warning">
+<strong>注意：</strong>使用第三方中转服务时，你的 API Key 和请求内容会经过第三方服务器。请选择可信的服务商，并注意数据安全。
+</div>
+
+### 方案三：在 config.toml 中配置代理
+
+编辑 `~/.codex/config.toml`，添加网络配置：
+
+```toml
+[network]
+proxy = "http://127.0.0.1:7890"
+timeout = 60
+```
+
+### 方案四：检查 DNS 设置
+
+如果代理已开启但仍超时，可能是 DNS 污染问题：
+
+```bash
+# 测试 DNS 解析
+nslookup api.openai.com
+
+# 如果解析结果异常，尝试更换 DNS
+# macOS / Linux
+sudo networksetup -setdnsservers Wi-Fi 8.8.8.8 1.1.1.1
+
+# Windows
+netsh interface ip set dns "Wi-Fi" static 8.8.8.8
+```
+
+## 诊断步骤
+
+按以下顺序排查：
+
+1. **确认代理可用**：在浏览器中打开 `https://api.openai.com/v1/models`，如果返回 JSON（即使报错），说明网络通。
+2. **确认终端代理生效**：执行 `curl https://api.openai.com/v1/models -H "Authorization: Bearer test"`，如果返回 JSON，说明终端代理配置正确。
+3. **确认环境变量**：执行 `echo $HTTPS_PROXY`（或 Windows 的 `echo %HTTPS_PROXY%`），确认变量已设置。
+4. **确认 Codex 读取到代理**：使用 `codex --verbose` 或查看 Codex 日志，确认请求是否走了代理。
+
+## 常见追问
+
+### Q: 浏览器能打开 OpenAI，但 Codex CLI 不行？
+
+浏览器可能使用了系统代理（如 Clash 的系统代理模式），而终端默认不读取系统代理。需要显式设置 `HTTPS_PROXY` 环境变量。
+
+### Q: 配置了代理但还是超时？
+
+检查代理端口是否正确。Clash 默认端口是 7890，V2Ray 可能是 1080，SSR 可能是 1080。确认你的代理软件实际监听的端口。
+
+<div class="alert alert-tip">
+<strong>建议：</strong>使用 Clash Verge 或 ClashX Pro 等支持"增强模式"（TUN Mode）的代理工具，可以在系统层面接管所有网络流量，无需单独配置环境变量。
+</div>

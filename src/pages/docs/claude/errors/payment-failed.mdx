@@ -1,0 +1,143 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "Payment failed / 卡被拒 — 订阅支付失败"
+description: "Claude Pro/Max 订阅时信用卡被拒，国内双币卡风控问题，解决方案包括海外信用卡或第三方代充"
+product: "Claude"
+category: "支付"
+severity: "中"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+在 Claude.ai 订阅 Pro 或 Max 套餐时，输入信用卡信息后提示：
+
+```
+Payment failed
+Your card was declined.
+```
+
+或：
+
+```
+Unable to process payment. Please try a different payment method.
+```
+
+## 错误原因
+
+### 原因一：国内双币卡被拒
+
+国内银行发行的双币信用卡（银联+Visa/Master）在 Claude 订阅时经常被拒。原因：
+
+- 发卡行风控拦截境外交易
+- 账单地址不匹配
+- 3D Secure 验证失败
+- 银联+外币组合被 Anthropic 支付系统识别为高风险
+
+### 原因二：IP 与卡信息不匹配
+
+如果你的 VPN IP 在美国，但信用卡账单地址在其他国家，支付系统会判定为可疑交易。
+
+### 原因三：虚拟卡被拒
+
+部分虚拟信用卡（如 Privacy.com、Revolut 虚拟卡）可能被 Anthropic 的支付系统拒绝。
+
+### 原因四：卡余额不足或限额
+
+预付费卡余额不足，或设置了交易限额。
+
+## 解决方案
+
+### 方案一：使用海外信用卡（最稳定）
+
+如果你有海外银行发行的 Visa/Master 信用卡：
+
+1. 确保 VPN IP 与卡账单地址所在国一致
+2. 在 Claude.ai → Settings → Billing 中添加信用卡
+3. 确保卡信息（卡号、有效期、CVV、账单地址）完全正确
+4. 确保 3D Secure 验证能正常通过
+
+### 方案二：使用第三方代充服务
+
+这是国内用户最常用的方案：
+
+| 平台类型 | 说明 | 风险 |
+|---|---|---|
+| 专业代充网站 | 人民币支付，代充 Claude Pro/Max | 中（需选可信平台） |
+| 淘宝代充 | 搜索"Claude Pro 代充" | 中高（质量参差不齐） |
+| 社群推荐代充 | 熟人推荐的代充服务 | 低-中 |
+
+<div class="alert alert-danger">
+<strong>代充风险提示：</strong>
+<ul>
+<li>部分代充使用盗刷信用卡，可能导致你的 Claude 账号被封</li>
+<li>代充后如果发起退款，Anthropic 会立即封号</li>
+<li>选择有口碑、有售后保障的平台</li>
+<li>代充价格明显低于官方价格（$20/月）的要警惕</li>
+</ul>
+</div>
+
+### 方案三：使用虚拟信用卡
+
+部分虚拟卡服务可以通过 Claude 的支付验证：
+
+| 服务 | 类型 | 成功率 | 说明 |
+|---|---|---|---|
+| Depay | 虚拟卡 | 中 | 支持 USDT 充值 |
+| OneKey Card | 虚拟卡 | 中高 | 加密货币充值 |
+| Wealthsimple | 虚拟卡 | 中 | 需加拿大身份 |
+| Privacy.com | 虚拟卡 | 低 | 美国居民限定 |
+
+### 方案四：Claude API + 第三方客户端
+
+如果你主要需要 Claude 的编程能力，可以跳过订阅，直接使用 Claude API：
+
+1. 在 [console.anthropic.com](https://console.anthropic.com) 注册 API 账号
+2. 充值 API 额度（支付方式与订阅类似，但部分 API 充值渠道更宽松）
+3. 使用支持 Claude API 的第三方客户端（如 ChatBox、OpenCat 等）
+
+## 支付成功后的防封措施
+
+<div class="alert alert-warning">
+<strong>支付成功后注意：</strong>
+<ul>
+<li>不要频繁切换 IP 地区（保持使用同一国家节点）</li>
+<li>不要发起信用卡退款（退款后极易被封号）</li>
+<li>不要多人共用同一账号（Anthropic 会检测异常使用模式）</li>
+<li>不要将账号分享给他人使用</li>
+<li>保持订阅状态稳定，不要反复订阅-取消-再订阅</li>
+</ul>
+</div>
+
+## 各支付方式对比
+
+| 方式 | 难度 | 成功率 | 成本 | 风险 |
+|---|---|---|---|---|
+| 海外信用卡 | 高 | 高 | $20-200/月 | 低 |
+| 第三方代充 | 低 | 高 | ¥150-1600/月 | 中 |
+| 虚拟信用卡 | 中 | 中 | $20-200/月+手续费 | 中 |
+| Claude API | 中 | 高 | 按 token 计费 | 低 |
+
+## 常见问题
+
+### Q: 国内双币卡一定不能用吗？
+
+不是 100% 不能用，但成功率很低（约 10-20%）。部分银行的高端信用卡（如招商银行全币种经典版）偶有成功案例，但不稳定。
+
+### Q: 代充后账号安全吗？
+
+取决于代充渠道。如果使用的是正规渠道（如官方支持的支付方式），账号安全。如果使用盗刷卡代充，随时可能被封。
+
+### Q: 可以用 PayPal 支付吗？
+
+Claude 目前不支持 PayPal。仅支持信用卡/借记卡支付。
+
+### Q: 订阅后可以退款吗？
+
+Anthropic 不提供订阅退款。一旦扣款，费用不可退还。建议先使用免费额度测试，满意后再订阅。
+
+## 相关阅读
+
+- [Claude 订阅与支付完整指南](/docs/claude/guides/subscription-payment)
+- [Claude 注册完整流程](/docs/claude/guides/registration)
+- [Usage limit reached 详解](/docs/claude/errors/usage-limit)

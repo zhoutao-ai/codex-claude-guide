@@ -1,0 +1,123 @@
+---
+layout: ../../../../layouts/DocLayout.astro
+title: "'codex' is not recognized — 命令未找到"
+description: "安装 Codex CLI 后在终端执行 codex 命令时提示未识别，通常是 PATH 环境变量未正确配置"
+product: "Codex"
+category: "安装"
+severity: "低"
+lastUpdated: "2026-06-29"
+---
+
+## 问题描述
+
+成功安装 Codex CLI 后，在终端执行：
+
+```bash
+codex --version
+```
+
+却收到错误提示：
+
+```
+'codex' is not recognized as an internal or external command,
+operable program or batch file.
+```
+
+或 macOS/Linux 上：
+
+```
+zsh: command not found: codex
+bash: codex: command not found
+```
+
+## 错误原因
+
+安装程序已将 `codex` 可执行文件放到 npm 的全局 bin 目录中，但该目录**未包含**在当前终端的 `PATH` 环境变量中，或者当前终端在安装前就已经打开，尚未刷新环境变量。
+
+## 解决方案
+
+### 第一步：确认安装是否成功
+
+执行以下命令查看 npm 全局安装的包：
+
+```bash
+npm list -g @openai/codex
+```
+
+如果列表中有 `@openai/codex`，说明安装成功，问题出在 PATH。
+
+### 第二步：查找 npm 全局 bin 目录
+
+```bash
+npm config get prefix
+```
+
+- **Windows**：通常是 `C:\Users\<用户名>\AppData\Roaming\npm`
+- **macOS/Linux**：通常是 `/usr/local/bin` 或 `~/.npm-global/bin`
+
+### 第三步：将该目录加入 PATH
+
+#### Windows
+
+1. 按 `Win + S`，搜索"环境变量"
+2. 点击"编辑系统环境变量"
+3. 点击"环境变量"按钮
+4. 在"用户变量"中找到 `Path`，点击编辑
+5. 点击"新建"，添加 npm 全局 bin 目录路径
+6. 确定保存
+
+或用 PowerShell 临时设置（仅当前会话有效）：
+
+```powershell
+$env:Path += ";$(npm config get prefix)"
+```
+
+#### macOS / Linux
+
+编辑 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）：
+
+```bash
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 第四步：重启终端
+
+**关闭当前终端窗口，重新打开一个新窗口**，然后执行：
+
+```bash
+codex --version
+```
+
+## 快速验证
+
+执行以下命令检查 codex 的完整路径：
+
+```bash
+# Windows
+where codex
+
+# macOS / Linux
+which codex
+```
+
+如果返回了路径，说明配置成功；如果返回空白或报错，说明 PATH 仍未生效。
+
+## 使用 nvm 时的特殊注意
+
+如果你使用 nvm（Node Version Manager）管理 Node.js 版本，nvm 会为每个版本创建独立的 bin 目录。切换 Node.js 版本后，需要确认对应的 bin 目录在 PATH 中：
+
+```bash
+# 查看当前 nvm 使用的版本
+nvm current
+
+# 确认该版本的 bin 目录
+which node
+# 输出类似 /Users/<用户名>/.nvm/versions/node/v22.x.x/bin/node
+```
+
+codex 的可执行文件应在同一目录下。
+
+<div class="alert alert-tip">
+<strong>最简方案：</strong>安装后<strong>完全关闭所有终端窗口</strong>（不是新建标签页，是完全退出），重新打开终端再试。90% 的 "command not found" 问题可以通过这个操作解决。
+</div>
